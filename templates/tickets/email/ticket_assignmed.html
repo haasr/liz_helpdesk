@@ -1,0 +1,33 @@
+{% extends 'tickets/email/base_email.html' %}
+
+{% block title %}Ticket Assignment Updated - {{ ticket.ticket_number }}{% endblock %}
+
+{% block content %}
+<p>Dear {{ ticket.requestor_name }},</p>
+
+<p>The assignment of your ticket has been updated:</p>
+
+<div class="ticket-info">
+    <p><strong>Ticket Number:</strong> {{ ticket.ticket_number }}</p>
+    <p><strong>Subject:</strong> {{ ticket.title }}</p>
+    <p><strong>Previous Assignment:</strong> {{ old_technician }}</p>
+    <p><strong>New Assignment:</strong> {{ new_technician }}</p>
+    <p><strong>Status:</strong> {{ ticket.get_status_display }}</p>
+</div>
+
+<p>Your new access code to view the ticket is:</p>
+<p class="access-code">{{ ticket.access_code }}</p>
+
+<p>You can view the latest updates using the button below:</p>
+
+<a href="{{ site_url }}{% url 'access_ticket' %}" class="button">View Ticket</a>
+
+<p>Remember to use:</p>
+<ul>
+    <li>Your email address ({{ ticket.requestor_email }})</li>
+    <li>Your ticket number ({{ ticket.ticket_number }})</li>
+    <li>The new access code shown above</li>
+</ul>
+
+<p>If you have any questions, please reply to this email or create a new ticket.</p>
+{% endblock %}

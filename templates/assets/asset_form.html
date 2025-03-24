@@ -1,0 +1,145 @@
+{% extends '../base.html' %}
+
+{% block title %}{% if is_create %}Add New Asset{% else %}Edit Asset {{ asset.inventory_number }}{% endif %} - ETSU Computing Helpdesk{% endblock %}
+
+{% block content %}
+<div class="row justify-content-center">
+    <div class="col-md-8">
+        <div class="card">
+            <div class="card-header">
+                <h2 class="card-title mb-0">{% if is_create %}Add New Asset{% else %}Edit Asset {{ asset.inventory_number }}{% endif %}</h2>
+            </div>
+            <div class="card-body">
+                <form method="post">
+                    {% csrf_token %}
+                    
+                    <div class="row">
+                        <div class="col-md-6 mb-3">
+                            <label for="{{ form.inventory_number.id_for_label }}" class="form-label{% if form.inventory_number.field.required %} required-field{% endif %}">
+                                {{ form.inventory_number.label }}
+                            </label>
+                            {{ form.inventory_number }}
+                            {% if form.inventory_number.errors %}
+                                <div class="invalid-feedback d-block">
+                                    {{ form.inventory_number.errors|join:", " }}
+                                </div>
+                            {% endif %}
+                        </div>
+                        
+                        <div class="col-md-6 mb-3">
+                            <label for="{{ form.name.id_for_label }}" class="form-label{% if form.name.field.required %} required-field{% endif %}">
+                                {{ form.name.label }}
+                            </label>
+                            {{ form.name }}
+                            {% if form.name.errors %}
+                                <div class="invalid-feedback d-block">
+                                    {{ form.name.errors|join:", " }}
+                                </div>
+                            {% endif %}
+                        </div>
+                    </div>
+                    
+                    <div class="row">
+                        <div class="col-md-6 mb-3">
+                            <label for="{{ form.type.id_for_label }}" class="form-label{% if form.type.field.required %} required-field{% endif %}">
+                                {{ form.type.label }}
+                            </label>
+                            {{ form.type }}
+                            {% if form.type.errors %}
+                                <div class="invalid-feedback d-block">
+                                    {{ form.type.errors|join:", " }}
+                                </div>
+                            {% endif %}
+                        </div>
+                        
+                        <div class="col-md-6 mb-3">
+                            <label for="{{ form.location.id_for_label }}" class="form-label{% if form.location.field.required %} required-field{% endif %}">
+                                {{ form.location.label }}
+                            </label>
+                            {{ form.location }}
+                            {% if form.location.errors %}
+                                <div class="invalid-feedback d-block">
+                                    {{ form.location.errors|join:", " }}
+                                </div>
+                            {% endif %}
+                        </div>
+                    </div>
+                    
+                    <div class="row">
+                        <div class="col-md-6 mb-3">
+                            <label for="{{ form.purchase_date.id_for_label }}" class="form-label{% if form.purchase_date.field.required %} required-field{% endif %}">
+                                {{ form.purchase_date.label }}
+                            </label>
+                            {{ form.purchase_date }}
+                            {% if form.purchase_date.errors %}
+                                <div class="invalid-feedback d-block">
+                                    {{ form.purchase_date.errors|join:", " }}
+                                </div>
+                            {% endif %}
+                        </div>
+                        
+                        <div class="col-md-6 mb-3 d-flex align-items-center">
+                            <div class="form-check mt-4">
+                                {{ form.is_active }}
+                                <label class="form-check-label" for="{{ form.is_active.id_for_label }}">
+                                    Active Asset
+                                </label>
+                            </div>
+                            {% if form.is_active.errors %}
+                                <div class="invalid-feedback d-block">
+                                    {{ form.is_active.errors|join:", " }}
+                                </div>
+                            {% endif %}
+                        </div>
+                    </div>
+                    
+                    <div class="mb-4">
+                        <label for="{{ form.details.id_for_label }}" class="form-label{% if form.details.field.required %} required-field{% endif %}">
+                            {{ form.details.label }}
+                        </label>
+                        {{ form.details }}
+                        {% if form.details.errors %}
+                            <div class="invalid-feedback d-block">
+                                {{ form.details.errors|join:", " }}
+                            </div>
+                        {% endif %}
+                    </div>
+
+                    {% if 'bitlocker_key' in form.fields %}
+                    <div class="mb-4">
+                        <label for="{{ form.bitlocker_key.id_for_label }}" class="form-label">
+                            BitLocker Recovery Key
+                        </label>
+                        {{ form.bitlocker_key }}
+                        <div class="form-text">
+                            48-digit recovery key, usually formatted as 8 groups of 6 digits.
+                            Example: 123456-123456-123456-123456-123456-123456-123456-123456
+                        </div>
+                        {% if form.bitlocker_key.errors %}
+                            <div class="invalid-feedback d-block">
+                                {{ form.bitlocker_key.errors|join:", " }}
+                            </div>
+                        {% endif %}
+                    </div>
+                    {% endif %}
+
+                    <div class="d-flex gap-2">
+                        <button type="submit" class="btn bttn-primary">{% if is_create %}Create Asset{% else %}Update Asset{% endif %}</button>
+                        {% if is_create %}
+                            <a href="{% url 'asset_list' %}" class="btn bttn-outline-edit">
+                                <i class="bi bi-box-arrow-in-left"></i>
+                                Cancel
+                            </a>
+                        {% else %}
+                            <a href="{% url 'asset_detail' asset.inventory_number %}" class="btn bttn-outline-edit">
+                                <i class="bi bi-box-arrow-in-left"></i>
+                                Cancel
+                            </a>
+                        {% endif %}
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

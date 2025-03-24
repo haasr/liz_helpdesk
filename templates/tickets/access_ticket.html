@@ -1,0 +1,37 @@
+{% extends '../base.html' %}
+
+{% block title %}Access Ticket - ETSU Computing Helpdesk{% endblock %}
+
+{% block content %}
+<div class="row justify-content-center">
+    <div class="col-md-6">
+        <div class="card">
+            <div class="card-header">
+                <h2 class="card-title mb-0">Access Your Ticket</h2>
+            </div>
+            <div class="card-body">
+                <form method="post">
+                    {% csrf_token %}
+                    {% for field in form %}
+                        <div class="mb-3">
+                            <label for="{{ field.id_for_label }}" class="form-label">{{ field.label }}</label>
+                            <input type="{{ field.field.widget.input_type|default:'text' }}"
+                                   name="{{ field.name }}"
+                                   id="{{ field.id_for_label }}"
+                                   class="form-control {% if field.errors %}is-invalid{% endif %}"
+                                   placeholder="{{ field.field.widget.attrs.placeholder }}"
+                                   {% if field.value %}value="{{ field.value }}"{% endif %}>
+                            {% if field.errors %}
+                                <div class="invalid-feedback">
+                                    {{ field.errors|join:", " }}
+                                </div>
+                            {% endif %}
+                        </div>
+                    {% endfor %}
+                    <button type="submit" class="btn bttn-primary">Access Ticket</button>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

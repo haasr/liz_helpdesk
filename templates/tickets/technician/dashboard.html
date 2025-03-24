@@ -1,0 +1,252 @@
+{% extends '../../base.html' %}
+
+{% block title %}Dashboard - ETSU Computing Helpdesk{% endblock %}
+
+{% block content %}
+<div class="row mb-4">
+    <div class="col">
+        <h2>Ticket Dashboard</h2>
+    </div>
+</div>
+
+<!-- Status Overview Cards -->
+<div class="row mb-4">
+    <div class="col-md-2">
+        <div class="card bg-primary text-white">
+            <div class="card-body">
+                <h5 class="card-title">New</h5>
+                <h2 class="mb-0">{{ status_counts.new }}</h2>
+            </div>
+        </div>
+    </div>
+    <div class="col-md-2">
+        <div class="card bg-info text-white">
+            <div class="card-body">
+                <h5 class="card-title">Assigned</h5>
+                <h2 class="mb-0">{{ status_counts.assigned }}</h2>
+            </div>
+        </div>
+    </div>
+    <div class="col-md-2">
+        <div class="card bg-warning">
+            <div class="card-body">
+                <h5 class="card-title">In Progress</h5>
+                <h2 class="mb-0">{{ status_counts.in_progress }}</h2>
+            </div>
+        </div>
+    </div>
+    <div class="col-md-2">
+        <div class="card bg-secondary text-white">
+            <div class="card-body">
+                <h5 class="card-title">Waiting</h5>
+                <h2 class="mb-0">{{ status_counts.waiting }}</h2>
+            </div>
+        </div>
+    </div>
+    <div class="col-md-2">
+        <div class="card bg-success text-white">
+            <div class="card-body">
+                <h5 class="card-title">Resolved</h5>
+                <h2 class="mb-0">{{ status_counts.resolved }}</h2>
+            </div>
+        </div>
+    </div>
+    <div class="col-md-2">
+        <div class="card bg-dark text-white">
+            <div class="card-body">
+                <h5 class="card-title">Closed</h5>
+                <h2 class="mb-0">{{ status_counts.closed }}</h2>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Search and Filters -->
+<div class="card mb-4">
+    <div class="card-body">
+        <form method="get" class="row g-3">
+            <div class="col-md-4">
+                <div class="input-group">
+                    <input type="text" name="search" class="form-control"
+                           placeholder="Search tickets..." value="{{ search_query }}">
+                    <button class="btn btn-outline-secondary" type="submit">
+                        <i class="bi bi-search"></i>
+                    </button>
+                </div>
+            </div>
+            <div class="col-md-2">
+                <select name="status" class="form-select">
+                    <option value="">All Statuses</option>
+                    {% for status in ticket_status_choices %}
+                        <option value="{{ status.0 }}"
+                                {% if status.0 == status_filter %}selected{% endif %}>
+                            {{ status.1 }}
+                        </option>
+                    {% endfor %}
+                </select>
+            </div>
+            <div class="col-md-2">
+                <select name="type" class="form-select">
+                    <option value="">All Types</option>
+                    {% for type in ticket_type_choices %}
+                        <option value="{{ type.0 }}"
+                                {% if type.0 == type_filter %}selected{% endif %}>
+                            {{ type.1 }}
+                        </option>
+                    {% endfor %}
+                </select>
+            </div>
+            <div class="col-md-2">
+                <select name="sort" class="form-select">
+                    <option value="-time_created"
+                            {% if sort_by == '-time_created' %}selected{% endif %}>
+                        Newest First
+                    </option>
+                    <option value="time_created"
+                            {% if sort_by == 'time_created' %}selected{% endif %}>
+                        Oldest First
+                    </option>
+                    <option value="status"
+                            {% if sort_by == 'status' %}selected{% endif %}>
+                        Status (A-Z)
+                    </option>
+                    <option value="-status"
+                            {% if sort_by == '-status' %}selected{% endif %}>
+                        Status (Z-A)
+                    </option>
+                    <option value="title"
+                            {% if sort_by == 'title' %}selected{% endif %}>
+                        Title (A-Z)
+                    </option>
+                    <option value="-title"
+                            {% if sort_by == '-title' %}selected{% endif %}>
+                        Title (Z-A)
+                    </option>
+                </select>
+            </div>
+            <div class="col-md-2">
+                <button type="submit" class="btn bttn-primary w-100">Apply Filters</button>
+            </div>
+        </form>
+    </div>
+</div>
+
+<!-- Ticket List -->
+<div class="card">
+    <div class="card-body">
+        <div class="table-responsive">
+            <table class="table table-hover">
+                <thead>
+                    <tr>
+                        <th>Ticket #</th>
+                        <th>Title</th>
+                        <th>Type</th>
+                        <th>Status</th>
+                        <th>Requestor</th>
+                        <th>Created</th>
+                        <th>Actions</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for ticket in page_obj %}
+                        <tr {% if ticket.has_new_responses %}class="table-info"{% endif %}>
+                            <td>{{ ticket.ticket_number }}</td>
+                            <td>
+                                <a href="{% url 'manage_ticket' ticket.ticket_number %}">
+                                    {{ ticket.title }}
+                                </a>
+                            </td>
+                            <td>{{ ticket.get_type_display }}</td>
+                            <td>
+                                <span class="badge {% if ticket.status == 'NEW' %}bg-primary
+                                                 {% elif ticket.status == 'ASG' %}bg-info
+                                                 {% elif ticket.status == 'PRG' %}bg-warning text-dark
+                                                 {% elif ticket.status == 'WTG' %}bg-secondary
+                                                 {% elif ticket.status == 'RES' %}bg-success
+                                                 {% else %}bg-dark{% endif %}">
+                                    {{ ticket.get_status_display }}
+                                </span>
+                            </td>
+                            <td>{{ ticket.requestor_name }}</td>
+                            <td>{{ ticket.time_created|date:"M d, Y H:i" }}</td>
+                            <td>
+                                <div class="btn-group">
+                                    <a href="{% url 'manage_ticket' ticket.ticket_number %}"
+                                       class="btn btn-sm bttn-outline-edit">
+                                       <i class="bi bi-eye"></i>
+                                        View
+                                    </a>
+                                    {% if not ticket.assigned_to and settings.ticket_self_assignment %}
+                                        <a href="{% url 'self_assign_ticket' ticket.ticket_number %}"
+                                           class="btn btn-sm btn-outline-success">
+                                            Self-Assign
+                                        </a>
+                                    {% endif %}
+                                </div>
+                            </td>
+                        </tr>
+                    {% empty %}
+                        <tr>
+                            <td colspan="7" class="text-center">No tickets found.</td>
+                        </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        </div>
+
+        <!-- Pagination -->
+        {% if page_obj.paginator.num_pages > 1 %}
+        <nav aria-label="Ticket pagination" class="mt-4">
+            <ul class="pagination justify-content-center">
+                {% if page_obj.has_previous %}
+                    <li class="page-item">
+                        <a class="page-link" href="?page=1{% if search_query %}&search={{ search_query }}{% endif %}{% if status_filter %}&status={{ status_filter }}{% endif %}{% if type_filter %}&type={{ type_filter }}{% endif %}{% if sort_by %}&sort={{ sort_by }}{% endif %}">&laquo; First</a>
+                    </li>
+                    <li class="page-item">
+                        <a class="page-link" href="?page={{ page_obj.previous_page_number }}{% if search_query %}&search={{ search_query }}{% endif %}{% if status_filter %}&status={{ status_filter }}{% endif %}{% if type_filter %}&type={{ type_filter }}{% endif %}{% if sort_by %}&sort={{ sort_by }}{% endif %}">Previous</a>
+                    </li>
+                {% endif %}
+
+                {% for num in page_obj.paginator.page_range %}
+                    {% if page_obj.number == num %}
+                        <li class="page-item active">
+                            <span class="page-link">{{ num }}</span>
+                        </li>
+                    {% elif num > page_obj.number|add:'-3' and num < page_obj.number|add:'3' %}
+                        <li class="page-item">
+                            <a class="page-link" href="?page={{ num }}{% if search_query %}&search={{ search_query }}{% endif %}{% if status_filter %}&status={{ status_filter }}{% endif %}{% if type_filter %}&type={{ type_filter }}{% endif %}{% if sort_by %}&sort={{ sort_by }}{% endif %}">{{ num }}</a>
+                        </li>
+                    {% endif %}
+                {% endfor %}
+
+                {% if page_obj.has_next %}
+                    <li class="page-item">
+                        <a class="page-link" href="?page={{ page_obj.next_page_number }}{% if search_query %}&search={{ search_query }}{% endif %}{% if status_filter %}&status={{ status_filter }}{% endif %}{% if type_filter %}&type={{ type_filter }}{% endif %}{% if sort_by %}&sort={{ sort_by }}{% endif %}">Next</a>
+                    </li>
+                    <li class="page-item">
+                        <a class="page-link" href="?page={{ page_obj.paginator.num_pages }}{% if search_query %}&search={{ search_query }}{% endif %}{% if status_filter %}&status={{ status_filter }}{% endif %}{% if type_filter %}&type={{ type_filter }}{% endif %}{% if sort_by %}&sort={{ sort_by }}{% endif %}">Last &raquo;</a>
+                    </li>
+                {% endif %}
+            </ul>
+        </nav>
+        {% endif %}
+    </div>
+</div>
+{% endblock %}
+
+{% block extra_js %}
+<script>
+// Add any dashboard-specific JavaScript here
+document.addEventListener('DOMContentLoaded', function() {
+    // Automatically submit form when filters change
+    const filterForm = document.querySelector('form');
+    const filterSelects = filterForm.querySelectorAll('select');
+
+    filterSelects.forEach(select => {
+        select.addEventListener('change', () => {
+            filterForm.submit();
+        });
+    });
+});
+</script>
+{% endblock %}

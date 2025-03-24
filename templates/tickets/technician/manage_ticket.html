@@ -1,0 +1,223 @@
+{% extends '../../base.html' %}
+
+{% block title %}Manage Ticket {{ ticket.ticket_number }} - ETSU Computing Helpdesk{% endblock %}
+
+{% block content %}
+<div class="row">
+    <div class="col-md-8">
+        <!-- Main Ticket Information -->
+        <div class="card mb-4">
+            <div class="card-header d-flex justify-content-between align-items-center">
+                <h2 class="card-title mb-0">
+                    {{ ticket.title }}
+                    <small class="text-muted">#{{ ticket.ticket_number }}</small>
+                </h2>
+                <form method="post" class="d-inline">
+                    {% csrf_token %}
+                    <input type="hidden" name="action" value="update_status">
+                    <select name="status" class="form-select form-select-sm" style="width: auto;" onchange="this.form.submit()">
+                        {% for status in status_choices %}
+                            <option value="{{ status.0 }}" {% if ticket.status == status.0 %}selected{% endif %}>
+                                {{ status.1 }}
+                            </option>
+                        {% endfor %}
+                    </select>
+                </form>
+            </div>
+            <div class="card-body">
+                <div class="row mb-3">
+                    <div class="col-md-2">
+                        <strong>Type:</strong>
+                        {% if ticket.type == 'INC' %}
+                        <span class="badge bg-putty-yellow text-dark">{{ ticket.get_type_display }}</span>
+                        {% else %}
+                        <span class="badge bg-info text-light">{{ ticket.get_type_display }}</span>
+                        {% endif %}
+                    </div>
+                    <div class="col-md-4">
+                        <strong>Subtype:</strong> {{ ticket.get_subtype_display }}
+                    </div>
+                    <div class="col-md-4">
+                        <strong>Item:</strong> {{ ticket.item|capfirst }}
+                    </div>
+                </div>
+
+                <div class="mb-4">
+                    <h5>Description</h5>
+                    <p class="mb-0">{{ ticket.description|linebreaks }}</p>
+                </div>
+
+                {% if ticket.attachments.exists %}
+                    <div class="mb-4">
+                        <h5>Attachments</h5>
+                        <ul class="list-group">
+                            {% for attachment in ticket.attachments.all %}
+                                <li class="list-group-item">
+                                    <a href="{{ attachment.file.url }}" target="_blank">
+                                        {{ attachment.filename|default:"attachment" }}
+                                    </a>
+                                </li>
+                            {% endfor %}
+                        </ul>
+                    </div>
+                {% endif %}
+
+                <!-- Message Thread -->
+                <div class="mb-4">
+                    <h5>Message Thread</h5>
+                    <div class="border rounded p-3 bg-light mb-3" style="max-height: 400px; overflow-y: auto;">
+                        {% for message in ticket.messages.all|dictsort:"created_at" %}
+                            <div class="mb-3">
+                                <div class="d-flex justify-content-between align-items-start">
+                                    <div>
+                                        <strong>
+                                            {% if message.is_from_requestor %}
+                                                {{ ticket.requestor_name }}
+                                            {% else %}
+                                                {{ message.sender.get_full_name }}
+                                            {% endif %}
+                                        </strong>
+                                        <small class="text-muted ms-2">
+                                            {{ message.created_at|date:"M d, Y H:i" }}
+                                        </small>
+                                    </div>
+                                    <span class="badge {% if message.is_from_requestor %}bg-info{% else %}bg-secondary{% endif %}">
+                                        {% if message.is_from_requestor %}Requestor{% else %}Support{% endif %}
+                                    </span>
+                                </div>
+                                <p class="mb-0 mt-2">{{ message.content|linebreaks }}</p>
+                            </div>
+                            {% if not forloop.last %}
+                                <hr>
+                            {% endif %}
+                        {% empty %}
+                            <p class="text-muted mb-0">No messages yet.</p>
+                        {% endfor %}
+                    </div>
+
+                    <!-- Add Message Form -->
+                    <form method="post">
+                        {% csrf_token %}
+                        <input type="hidden" name="action" value="add_message">
+                        <div class="mb-3">
+                            <label for="{{ message_form.content.id_for_label }}" class="form-label">
+                                Add Response
+                            </label>
+                            {{ message_form.content }}
+                            {% if message_form.content.errors %}
+                                <div class="invalid-feedback">
+                                    {{ message_form.content.errors|join:", " }}
+                                </div>
+                            {% endif %}
+                        </div>
+                        <button type="submit" class="btn bttn-primary">Send Message</button>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="col-md-4">
+        <!-- Ticket Details Sidebar -->
+        <div class="card mb-4">
+            <div class="card-header">
+                <h5 class="card-title mb-0">Ticket Details</h5>
+            </div>
+            <div class="card-body">
+                <dl>
+                    <dt>Created</dt>
+                    <dd>{{ ticket.time_created|date:"M d, Y H:i" }}</dd>
+
+                    <dt>Requestor</dt>
+                    <dd>{{ ticket.requestor_name }}</dd>
+
+                    <dt>Email</dt>
+                    <dd>
+                        <a href="mailto:{{ ticket.requestor_email }}">
+                            <i class="bi bi-envelope-at-fill"></i>
+                            {{ ticket.requestor_email }}
+                        </a>
+                    </dd>
+
+                    {% if ticket.requestor_phone %}
+                        <dt>Phone</dt>
+                        <dd><a href="tel:{{ ticket.requestor_phone }}">
+                            <i class="bi bi-telephone-fill"></i>
+                            {{ ticket.requestor_phone }}
+                        </a>
+                        </dd>
+                    {% endif %}
+                </dl>
+
+                <!-- Assignment Section -->
+                <form method="post" class="mb-3">
+                    {% csrf_token %}
+                    <input type="hidden" name="action" value="assign_ticket">
+                    <label for="technician" class="form-label">Assigned To</label>
+                    <select name="technician" id="technician" class="form-select mb-2"
+                            onchange="this.form.submit()">
+                        <option value="">-- Unassigned --</option>
+                        {% for tech in available_technicians %}
+                            <option value="{{ tech.id }}"
+                                    {% if ticket.assigned_to == tech %}selected{% endif %}>
+                                {{ tech.get_full_name }}
+                            </option>
+                        {% endfor %}
+                    </select>
+                </form>
+
+                {% if ticket.assets.exists %}
+                    <h6>Related Assets</h6>
+                    <div class="list-group list-group-flush">
+                        {% for asset in ticket.assets.all %}
+                            <div class="list-group-item px-0 d-flex justify-content-between align-items-center" style="border-radius: 8px;">
+                                <div>
+                                    <a href="{% url 'asset_detail' asset.inventory_number %}" target="_blank">
+                                        {{ asset.name }}
+                                    </a>
+                                    <br>
+                                    <small class="text-muted">{{ asset.inventory_number }}</small>
+                                </div>
+                                <form method="post" class="d-inline">
+                                    {% csrf_token %}
+                                    <input type="hidden" name="action" value="remove_asset">
+                                    <input type="hidden" name="asset_id" value="{{ asset.id }}">
+                                    <button type="submit" class="btn btn-sm btn-outline-danger" title="Unlink asset"
+                                            onclick="return confirm('Are you sure you want to unlink this asset from the ticket?')">
+                                        <i class="bi bi-x-circle"></i>
+                                    </button>
+                                </form>
+                            </div>
+                        {% endfor %}
+                    </div>
+                {% endif %}
+                <!-- Add Asset Form -->
+                <div class="mt-4">
+                    <h6 class="mb-3">Add Asset</h6>
+                    <form method="post" action="{% url 'add_asset_to_ticket' ticket.ticket_number %}">
+                        {% csrf_token %}
+                        <div class="input-group mb-3">
+                            <input type="text" name="inventory_number" class="form-control" 
+                                placeholder="Enter inventory #" required>
+                            <button class="btn bttn-outline-edit" type="submit">Add</button>
+                        </div>
+                        <small class="form-text">Enter the inventory number of an existing asset to associate it with this ticket.</small>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}
+
+{% block extra_js %}
+<script>
+document.addEventListener('DOMContentLoaded', function() {
+    // Auto-scroll message thread to bottom
+    const messageThread = document.querySelector('.bg-light');
+    if (messageThread) {
+        messageThread.scrollTop = messageThread.scrollHeight;
+    }
+});
+</script>
+{% endblock %}

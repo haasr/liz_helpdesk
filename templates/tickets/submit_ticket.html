@@ -1,0 +1,182 @@
+{% extends '../base.html' %}
+
+{% block title %}Submit a Ticket - ETSU Computing Helpdesk{% endblock %}
+
+{% block content %}
+<div class="row justify-content-center">
+    <div class="col-md-8">
+        <div class="card">
+            <div class="card-header">
+                <h2 class="card-title mb-0">Submit a Ticket</h2>
+            </div>
+            <div class="card-body">
+                {% if messages %}
+                    {% for message in messages %}
+                        <div class="alert alert-{{ message.tags }} alert-dismissible fade show">
+                            {{ message }}
+                            <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+                        </div>
+                    {% endfor %}
+                {% endif %}
+
+                <form method="post" enctype="multipart/form-data">
+                    {% csrf_token %}
+
+                    {% for field in form %}
+                        <div class="mb-3">
+                            <label for="{{ field.id_for_label }}" class="forms-label">
+                                {{ field.label }}
+                            </label>
+                            {{ field }}
+                            {% if field.errors %}
+                                <div class="invalid-feedback d-block">
+                                    {{ field.errors|join:", " }}
+                                </div>
+                            {% endif %}
+                        </div>
+                    {% endfor %}
+
+                    {% if form.non_field_errors %}
+                        <div class="alert alert-danger">
+                            {{ form.non_field_errors|join:", " }}
+                        </div>
+                    {% endif %}
+
+                    <div class="d-grid gap-2">
+                        <button type="submit" class="btn bttn-primary ff-bold">Submit Ticket</button>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}
+
+{% block extra_js %}
+<script>
+const itemChoices = {
+    'NET': [
+        ['connectivity', 'Internet/Network Connectivity'],
+        ['wifi', 'WiFi Issues'],
+        ['ethernet', 'Ethernet Connection'],
+        ['vpn', 'VPN Access'],
+        ['router', 'Router/Switch Issues'],
+        ['performance', 'Network Performance'],
+        ['other', 'Other Network Issue']
+    ],
+    'WRK': [
+        ['setup', 'New Computer Setup'],
+        ['hardware', 'Hardware Issues'],
+        ['remote_desktop', 'Remote Desktop'],
+        ['makemeadmin', 'MakeMeAdmin Access'],
+        ['monitors', 'Monitor/Display Issues'],
+        ['peripherals', 'Keyboard/Mouse/Peripherals'],
+        ['other', 'Other Workstation Issue']
+    ],
+    'SRV': [
+        ['deploy', 'Server Deployment'],
+        ['access', 'Server Access'],
+        ['maintenance', 'Server Maintenance'],
+        ['backup', 'Backup Issues'],
+        ['performance', 'Performance Issues'],
+        ['storage', 'Storage/Space Issues'],
+        ['other', 'Other Server Issue']
+    ],
+    'PRT': [
+        ['connect', 'Printer Connection'],
+        ['install', 'Printer Installation'],
+        ['error', 'Printer Errors'],
+        ['supplies', 'Printer Supplies'],
+        ['quality', 'Print Quality Issues'],
+        ['other', 'Other Printer Issue']
+    ],
+    'SFT': [
+        ['install', 'Software Installation'],
+        ['update', 'Software Updates'],
+        ['license', 'License Management'],
+        ['config', 'Software Configuration'],
+        ['compatibility', 'Compatibility Issues'],
+        ['other', 'Other Software Issue']
+    ],
+    'ACC': [
+        ['access', 'Account Access'],
+        ['permissions', 'Permission Issues'],
+        ['password', 'Password Reset'],
+        ['creation', 'Account Creation'],
+        ['software_access', 'Software Access Rights'],
+        ['other', 'Other Account Issue']
+    ],
+    'LAB': [
+        ['instructor_ws', 'Instructor Workstation'],
+        ['instructor_periph', 'Instructor Peripherals'],
+        ['projector', 'Projector'],
+        ['av_equipment', 'A/V Equipment (Control Panel, Microphone)'],
+        ['lab_computer', 'Lab Computer'],
+        ['lab_periph', 'Lab Peripherals'],
+        ['other', 'Other Lab Issue']
+    ]
+};
+
+document.addEventListener('DOMContentLoaded', function() {
+    const subtypeSelect = document.getElementById('id_subtype');
+    const itemSelect = document.getElementById('id_item');
+    
+    const inventoryField = document.getElementById('id_inventory_number');
+    const assetTypeField = document.getElementById('id_asset_type');
+
+    function updateItemChoices() {
+        const selectedSubtype = subtypeSelect.value;
+        const choices = itemChoices[selectedSubtype] || [];
+
+        // Clear current options
+        itemSelect.innerHTML = '<option value="">Select an item...</option>';
+
+        // Add new options
+        choices.forEach(([value, label]) => {
+            const option = new Option(label, value);
+            itemSelect.add(option);
+        });
+
+        // Disable/enable based on whether there are choices
+        itemSelect.disabled = !selectedSubtype;
+    }
+
+    // Function to update asset type field state
+    function updateAssetTypeField() {
+        if (inventoryField.value.trim()) {
+            // Enable asset type if inventory number is provided
+            assetTypeField.disabled = false;
+            assetTypeField.required = true;
+            
+            // Add visual indication that the field is required
+            const assetTypeLabel = document.querySelector('label[for="id_asset_type"]');
+            if (assetTypeLabel && !assetTypeLabel.classList.contains('required-field')) {
+                assetTypeLabel.classList.add('required-field');
+            }
+        } else {
+            // Disable asset type if inventory number is empty
+            assetTypeField.disabled = true;
+            assetTypeField.required = false;
+            assetTypeField.value = '';
+            
+            // Remove required visual indication
+            const assetTypeLabel = document.querySelector('label[for="id_asset_type"]');
+            if (assetTypeLabel) {
+                assetTypeLabel.classList.remove('required-field');
+            }
+        }
+    }
+
+    // Initialize items dropdown
+    updateItemChoices();
+
+    // Initialize asset type field state
+    updateAssetTypeField();
+
+    // Update items when subtype changes
+    subtypeSelect.addEventListener('change', updateItemChoices);
+    // Update field state when inventory number changes
+    inventoryField.addEventListener('input', updateAssetTypeField);
+});
+</script>
+{% endblock %}

@@ -1,0 +1,107 @@
+{% extends '../base.html' %}
+
+{% block title %}Delete User - ETSU Computing Helpdesk{% endblock %}
+
+{% block content %}
+<div class="row justify-content-center">
+    <div class="col-md-8">
+        <div class="card">
+            <div class="card-header bg-danger text-white">
+                <h2 class="card-title mb-0">Confirm User Deletion</h2>
+            </div>
+            <div class="card-body">
+                <p class="lead">Are you sure you want to delete the following user?</p>
+                
+                <div class="alert alert-warning">
+                    <p><strong>Username:</strong> {{ user_to_delete.username }}</p>
+                    <p><strong>Name:</strong> {{ user_to_delete.get_full_name }}</p>
+                    <p><strong>Email:</strong> {{ user_to_delete.email }}</p>
+                    <p><strong>Type:</strong> {{ user_to_delete.get_user_type_display }}</p>
+                </div>
+                
+                <p><strong>Warning:</strong> This action cannot be undone. The user account will be permanently deleted.</p>
+                
+                {% if tickets_count > 0 %}
+                    <div class="alert alert-info">
+                        <p><strong>Note:</strong> This user has {{ tickets_count }} assigned ticket{{ tickets_count|pluralize }}. Please select what to do with these tickets:</p>
+                        
+                        <form method="post">
+                            {% csrf_token %}
+                            <input type="hidden" name="action" value="confirm_delete">
+                            
+                            <div class="form-check mb-3">
+                                <input class="form-check-input" type="radio" name="reassign_option" id="unassign" value="unassign" checked>
+                                <label class="form-check-label" for="unassign">
+                                    Unassign tickets (tickets will return to the pool as new tickets)
+                                </label>
+                            </div>
+                            
+                            {% if other_technicians %}
+                                <div class="form-check mb-3">
+                                    <input class="form-check-input" type="radio" name="reassign_option" id="reassign" value="reassign">
+                                    <label class="form-check-label" for="reassign">
+                                        Reassign tickets to another technician:
+                                    </label>
+                                </div>
+                                
+                                <div class="mb-3 ms-4">
+                                    <select name="new_technician" class="form-select" id="new_technician">
+                                        <option value="">Select a technician</option>
+                                        {% for tech in other_technicians %}
+                                            <option value="{{ tech.id }}">{{ tech.get_full_name }}</option>
+                                        {% endfor %}
+                                    </select>
+                                </div>
+                            {% endif %}
+                            
+                            <div class="d-flex gap-2 mt-4">
+                                <button type="submit" class="btn btn-danger">Delete User</button>
+                                <a href="{% url 'manage_users' %}" class="btn bttn-outline-edit">Cancel</a>
+                            </div>
+                        </form>
+                    </div>
+                {% else %}
+                    <form method="post">
+                        {% csrf_token %}
+                        <input type="hidden" name="action" value="confirm_delete">
+                        <div class="d-flex gap-2">
+                            <button type="submit" class="btn btn-danger">
+                                <i class="bi bi-trash"></i>
+                                Delete User
+                            </button>
+                            <a href="{% url 'manage_users' %}" class="btn bttn-outline-edit">
+                                <i class="bi bi-box-arrow-left"></i>
+                                Cancel
+                            </a>
+                        </div>
+                    </form>
+                {% endif %}
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}
+
+{% block extra_js %}
+<script>
+document.addEventListener('DOMContentLoaded', function() {
+    // Handle technician select activation/deactivation
+    const reassignRadio = document.getElementById('reassign');
+    const unassignRadio = document.getElementById('unassign');
+    const technicianSelect = document.getElementById('new_technician');
+    
+    if (reassignRadio && unassignRadio && technicianSelect) {
+        function updateSelectState() {
+            technicianSelect.disabled = !reassignRadio.checked;
+        }
+        
+        // Initial state
+        updateSelectState();
+        
+        // Add event listeners
+        reassignRadio.addEventListener('change', updateSelectState);
+        unassignRadio.addEventListener('change', updateSelectState);
+    }
+});
+</script>
+{% endblock %}

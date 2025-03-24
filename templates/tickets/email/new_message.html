@@ -1,0 +1,33 @@
+{% extends 'tickets/email/base_email.html' %}
+
+{% block title %}New Message on Ticket {{ ticket.ticket_number }}{% endblock %}
+
+{% block content %}
+<p>Dear {{ ticket.requestor_name }},</p>
+
+<p>There is a new message on your ticket:</p>
+
+<div class="ticket-info">
+    <p><strong>Ticket Number:</strong> {{ ticket.ticket_number }}</p>
+    <p><strong>Title:</strong> {{ ticket.title }}</p>
+    <p><strong>Status:</strong> {{ ticket.get_status_display }}</p>
+</div>
+
+<div style="background-color: #f8f9fa; padding: 15px; border-left: 4px solid #041E42; margin: 15px 0;">
+    {{ message.content|linebreaks }}
+</div>
+
+<p>Your new access code to view and respond to the ticket is:</p>
+<p class="access-code">{{ ticket.access_code }}</p>
+
+<p>You can view the complete message thread and respond using the button below:</p>
+
+<a href="{{ site_url }}{% url 'access_ticket' %}" class="button">View and Respond</a>
+
+<p>Remember to use:</p>
+<ul>
+    <li>Your email address ({{ ticket.requestor_email }})</li>
+    <li>Your ticket number ({{ ticket.ticket_number }})</li>
+    <li>The new access code shown above</li>
+</ul>
+{% endblock %}

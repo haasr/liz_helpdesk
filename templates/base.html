@@ -1,0 +1,146 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>{% block title %}ETSU Computing Helpdesk{% endblock %}</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css">
+    <link href="{% static 'css/style.css' %}" rel="stylesheet">
+    <link href="{% static 'img/favicon.ico' %}" rel="icon" type="image/x-icon">
+    <style>
+        .required-field::after {
+            content: "*";
+            color: red;
+            margin-left: 4px;
+        }
+    </style>
+</head>
+<body class="body-light">
+    <div class="page-container">
+        <div class="content-wrap">
+            <nav class="navbar navbar-expand-lg navbar-dark bg-primary mb-5">
+                <div class="container">
+                    <a class="navbar-brand" href="{% url 'submit_ticket' %}" id="navbarBrand">
+                        <img src="{% static 'img/etsu-help-desk-logo-grayscale.png' %}" height="125" alt="ETSU logo" title="Submit ticket" style="margin-bottom: -37px;">
+                    </a>
+                    <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav">
+                        <span class="navbar-toggler-icon"></span>
+                    </button>
+                    <div class="collapse navbar-collapse" id="navbarNav">
+                        <ul class="navbar-nav pt-3" style="margin-left: 100px;">
+                        {% if user.is_authenticated %}
+                            <li class="nav-item">
+                                <a class="nav-link" href="{% url 'technician_dashboard' %}">
+                                    <i class="bi bi-speedometer2"></i>
+                                    Dashboard
+                                </a>
+                            </li>
+                            <li class="nav-item">
+                                <a class="nav-link" href="{% url 'asset_list' %}">
+                                    <i class="bi bi-pc-display"></i>
+                                    Assets
+                                </a>
+                            </li>
+                            {% if user.user_type == 'MGR' %}
+                                <li class="nav-item dropdown">
+                                    <a class="nav-link dropdown-toggle" href="#" id="adminDropdown" role="button"
+                                    data-bs-toggle="dropdown" aria-expanded="false">
+                                        Administration
+                                    </a>
+                                    <ul class="dropdown-menu" aria-labelledby="adminDropdown">
+                                        <li>
+                                            <a class="dropdown-item" href="{% url 'manage_users' %}">
+                                                <i class="bi bi-person-fill-gear"></i>
+                                                Manage Users
+                                            </a>
+                                        </li>
+                                        <li>
+                                            <a class="dropdown-item" href="{% url 'manage_settings' %}">
+                                                <i class="bi bi-sliders"></i>
+                                                System Settings
+                                            </a>
+                                        </li>
+                                    </ul>
+                                </li>
+                            {% endif %}
+                            <li class="nav-item dropdown">
+                                <a class="nav-link dropdown-toggle" href="#" id="navbarDropdown" role="button"
+                                data-bs-toggle="dropdown" aria-expanded="false">
+                                    {{ user.get_full_name|default:user.username }}
+                                </a>
+                                <ul class="dropdown-menu dropdown-menu-end" aria-labelledby="navbarDropdown">
+                                    <li>
+                                        <a class="dropdown-item" href="{% url 'logout' %}">
+                                            <i class="bi bi-x-circle-fill"></i>
+                                            Logout
+                                        </a>
+                                    </li>
+                                </ul>
+                            </li>
+                        {% else %}
+                            <li class="nav-item">
+                                <a class="nav-link" href="{% url 'submit_ticket' %}">Submit Ticket</a>
+                            </li>
+                            <li class="nav-item">
+                                <a class="nav-link" href="{% url 'access_ticket' %}">Check Ticket Status</a>
+                            </li>
+                        {% endif %}
+                        </ul>
+                    </div>
+                </div>
+            </nav>
+
+            <div class="container my-4">
+                {% if messages %}
+                    {% for message in messages %}
+                        <div class="alert alert-{{ message.tags }} alert-dismissible fade show">
+                            {{ message }}
+                            <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+                        </div>
+                    {% endfor %}
+                {% endif %}
+
+                {% block content %}{% endblock %}
+            </div>
+        </div>
+    </div>
+
+    {% with 'img/etsu-johnson-city-tn-blue-ridge-mountains_21t.min.svg' as footer_img_path %}
+    <footer class="pt-3 pb-3 text-right" style="background-image: url('{% static footer_img_path %}');">
+    {% endwith %}
+        <div class="container">
+            <div class="row text-white">
+                <div class="col-md">
+                    <div id="footerContent">
+                        <p>A project of the <a class="text-putty-yellow" href="https://www.etsu.edu/cbat/computing/" target="_blank">Department of Computing</a></p>
+                        <p id="copyright"><a href="{% url 'login' %}" style="text-decoration: none; color: white;">&copy;</a>&nbsp;{% now "Y" %}, <a class="text-putty-yellow" href="https://www.etsu.edu/ehome/" target="_blank">East Tennessee State University</a></p>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </footer>
+
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+    <script>
+        let footerImgAnimated = "{% static 'img/etsu-computing.gif' %}";
+        let footerImgStatic   = "{% static 'img/etsu-computing.png' %}";
+
+        document.addEventListener('DOMContentLoaded', function() {
+            let animatedFooterImage = `<img class="ml-auto" src="` + footerImgAnimated + `" alt="ETSU Computing logo" width="220">`;
+            let staticFooterImage   = `<img class="ml-auto p-4" src="` + footerImgStatic + `" alt="ETSU Computing logo" width="190">`;
+
+            const motionReduced = window.matchMedia(`(prefers-reduced-motion: reduce)`) === true || window.matchMedia(`(prefers-reduced-motion: reduce)`).matches === true;
+            if (motionReduced) {
+                // DON'T use an amination here!
+                document.getElementById('footerContent').insertAdjacentHTML('afterbegin', staticFooterImage);
+            } else {
+                // DO use an animation here!
+                document.getElementById('footerContent').insertAdjacentHTML('afterbegin', animatedFooterImage);
+            }
+        });
+    </script>
+    {% block extra_js %}{% endblock %}
+</body>
+</html>

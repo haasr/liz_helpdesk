@@ -1,0 +1,38 @@
+{% extends 'tickets/email/base_email.html' %}
+
+{% block title %}Ticket Status Updated - {{ ticket.ticket_number }}{% endblock %}
+
+{% block content %}
+<p>Dear {{ ticket.requestor_name }},</p>
+
+<p>The status of your ticket has been updated:</p>
+
+<div class="ticket-info">
+    <p><strong>Ticket Number:</strong> {{ ticket.ticket_number }}</p>
+    <p><strong>Subject:</strong> {{ ticket.title }}</p>
+    <p><strong>Previous Status:</strong> {{ old_status }}</p>
+    <p><strong>New Status:</strong> {{ new_status }}</p>
+</div>
+
+<p>Your new access code to view the ticket is:</p>
+<p class="access-code">{{ ticket.access_code }}</p>
+
+<p>You can view the latest updates using the button below:</p>
+
+<a href="{{ site_url }}{% url 'access_ticket' %}" class="button">View Ticket</a>
+
+<p>Remember to use:</p>
+<ul>
+    <li>Your email address ({{ ticket.requestor_email }})</li>
+    <li>Your ticket number ({{ ticket.ticket_number }})</li>
+    <li>The new access code shown above</li>
+</ul>
+
+{% if ticket.status == 'RES' %}
+<p><strong>Important:</strong> Your ticket has been marked as Resolved. Please check if the solution works for you. If so, no further action is needed. If you still have issues, please respond to let us know.</p>
+{% endif %}
+
+{% if ticket.status == 'WTG' %}
+<p><strong>Note:</strong> Your ticket is marked as Waiting. This usually means we need additional information from you. Please check the message thread for any questions and respond at your earliest convenience.</p>
+{% endif %}
+{% endblock %}

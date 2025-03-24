@@ -1,0 +1,23 @@
+{% extends '../base.html' %}
+
+{% block title %}Ticket Submitted - ETSU Computing Helpdesk{% endblock %}
+
+{% block content %}
+<div class="row justify-content-center">
+    <div class="col-md-8">
+        <div class="card">
+            <div class="card-header bg-success text-white">
+                <h2 class="card-title mb-0">Ticket Submitted Successfully!</h2>
+            </div>
+            <div class="card-body">
+                <h4>Ticket Number: {{ ticket.ticket_number }}</h4>
+                <p class="lead">Thank you for submitting your ticket. We have sent a confirmation email to {{ ticket.requestor_email }} with your ticket details and access code.</p>
+                <p>Please check your email for instructions on how to check the status of your ticket.</p>
+                <hr>
+                <a href="{% url 'submit_ticket' %}" class="btn bttn-primary">Submit Another Ticket</a>
+                <a href="{% url 'access_ticket' %}" class="btn bttn-edit">Check Ticket Status</a>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

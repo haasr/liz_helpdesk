@@ -1,0 +1,17 @@
+# Copy to /etc/systemd/system
+
+Description=HelpDesk ticketing system Django webapp
+
+After=network-online.target
+Wants=network-online.target systemd-networkd-wait-online.service
+
+StartLimitIntervalSec=500
+StartLimitBurst=5
+
+[Service]
+ExecStart=/home/haasrr/repos/helpdesk/run.bash
+Restart=on-failure
+RestartSec=20s
+
+[Install]
+WantedBy=multi-user.target

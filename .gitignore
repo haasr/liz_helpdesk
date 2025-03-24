@@ -1,0 +1,15 @@
+# SSL certs
+certs/*
+# Database migrations
+migrations/*
+# Stupid folder that appears with images for some reason
+.comments
+# Virtual environments
+.venv
+venv
+# Cache files or directories
+*pyc*
+# Sqlite database
+*sqlite*
+# Visual Studio (mainly VS Code)
+.vs*
