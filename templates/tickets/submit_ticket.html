@@ -10,20 +10,10 @@
                 <h2 class="card-title mb-0">Submit a Ticket</h2>
             </div>
             <div class="card-body">
-                {% if messages %}
-                    {% for message in messages %}
-                        <div class="alert alert-{{ message.tags }} alert-dismissible fade show">
-                            {{ message }}
-                            <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
-                        </div>
-                    {% endfor %}
-                {% endif %}
-
-                <form method="post" enctype="multipart/form-data">
+                <form method="post" enctype="multipart/form-data" class="d-flex flex-column gap-3">
                     {% csrf_token %}
-
                     {% for field in form %}
-                        <div class="mb-3">
+                        <div>
                             <label for="{{ field.id_for_label }}" class="forms-label">
                                 {{ field.label }}
                             </label>
@@ -35,16 +25,12 @@
                             {% endif %}
                         </div>
                     {% endfor %}
-
                     {% if form.non_field_errors %}
                         <div class="alert alert-danger">
                             {{ form.non_field_errors|join:", " }}
                         </div>
                     {% endif %}
-
-                    <div class="d-grid gap-2">
-                        <button type="submit" class="btn bttn-primary ff-bold">Submit Ticket</button>
-                    </div>
+                    <button type="submit" class="btn bttn-primary ff-bold">Submit Ticket</button>
                 </form>
             </div>
         </div>

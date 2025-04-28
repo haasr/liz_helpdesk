@@ -10,19 +10,16 @@
                 <h2 class="card-title mb-0">Access Your Ticket</h2>
             </div>
             <div class="card-body">
-                <form method="post">
+                <form method="post" class="d-flex flex-column gap-3">
                     {% csrf_token %}
                     {% for field in form %}
-                        <div class="mb-3">
-                            <label for="{{ field.id_for_label }}" class="form-label">{{ field.label }}</label>
-                            <input type="{{ field.field.widget.input_type|default:'text' }}"
-                                   name="{{ field.name }}"
-                                   id="{{ field.id_for_label }}"
-                                   class="form-control {% if field.errors %}is-invalid{% endif %}"
-                                   placeholder="{{ field.field.widget.attrs.placeholder }}"
-                                   {% if field.value %}value="{{ field.value }}"{% endif %}>
+                        <div>
+                            <label for="{{ field.id_for_label }}" class="form-label">
+                                {{ field.label }}
+                            </label>
+                            {{ field }}
                             {% if field.errors %}
-                                <div class="invalid-feedback">
+                                <div class="invalid-feedback d-block">
                                     {{ field.errors|join:", " }}
                                 </div>
                             {% endif %}

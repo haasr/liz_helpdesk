@@ -4,26 +4,26 @@
 
 {% block content %}
 <div class="row justify-content-center">
-    <div class="col-md-6">
+    <div class="col-md-8">
         <div class="card">
             <div class="card-header bg-danger text-white">
-                <h2 class="card-title mb-0">Confirm Delete</h2>
+                <h2 class="card-title m-0">Confirm Delete</h2>
             </div>
-            <div class="card-body">
-                <p class="lead">Are you sure you want to delete the following asset?</p>
+            <div class="card-body d-flex flex-column gap-3">
+                <div class="lead">Are you sure you want to delete the following asset?</div>
                 
-                <div class="alert alert-warning">
-                    <p><strong>Inventory Number:</strong> {{ asset.inventory_number }}</p>
-                    <p><strong>Asset Name:</strong> {{ asset.name }}</p>
-                    <p><strong>Type:</strong> {{ asset.get_type_display }}</p>
-                    <p><strong>Location:</strong> {{ asset.location }}</p>
+                <div class="alert alert-warning d-flex flex-column gap-2">
+                    <div class="row"><span class="col-4">Inventory Number:</strong></span><span class="col-8">{{ asset.inventory_number }}</span></div>
+                    <div class="row"><span class="col-4">Asset Name:</strong></span><span class="col-8">{{ asset.name }}</span></div>
+                    <div class="row"><span class="col-4">Type:</strong></span><span class="col-8">{{ asset.get_type_display }}</span></div>
+                    <div class="row"><span class="col-4">Location:</strong></span><span class="col-8">{{ asset.location }}</span></div>
                 </div>
                 
-                <p><strong>Warning:</strong> This action cannot be undone. All information associated with this asset will be permanently deleted.</p>
+                <div><span class="text-warning-emphasis"><strong>Warning:</strong></span> This action cannot be undone. All information associated with this asset will be permanently deleted.</div>
                 
                 <form method="post">
                     {% csrf_token %}
-                    <div class="d-flex gap-2">
+                    <div class="d-flex gap-1 justify-content-end">
                         <button type="submit" class="btn btn-danger">
                             <i class="bi bi-trash"></i>
                             Delete Asset

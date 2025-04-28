@@ -18,97 +18,107 @@
     </style>
 </head>
 <body class="body-light">
-    <div class="page-container">
-        <div class="content-wrap">
-            <nav class="navbar navbar-expand-lg navbar-dark bg-primary mb-5">
-                <div class="container">
-                    <a class="navbar-brand" href="{% url 'submit_ticket' %}" id="navbarBrand">
-                        <img src="{% static 'img/etsu-help-desk-logo-grayscale.png' %}" height="125" alt="ETSU logo" title="Submit ticket" style="margin-bottom: -37px;">
-                    </a>
-                    <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav">
-                        <span class="navbar-toggler-icon"></span>
-                    </button>
-                    <div class="collapse navbar-collapse" id="navbarNav">
-                        <ul class="navbar-nav pt-3" style="margin-left: 100px;">
-                        {% if user.is_authenticated %}
-                            <li class="nav-item">
-                                <a class="nav-link" href="{% url 'technician_dashboard' %}">
-                                    <i class="bi bi-speedometer2"></i>
-                                    Dashboard
-                                </a>
-                            </li>
-                            <li class="nav-item">
-                                <a class="nav-link" href="{% url 'asset_list' %}">
-                                    <i class="bi bi-pc-display"></i>
-                                    Assets
-                                </a>
-                            </li>
-                            {% if user.user_type == 'MGR' %}
-                                <li class="nav-item dropdown">
-                                    <a class="nav-link dropdown-toggle" href="#" id="adminDropdown" role="button"
-                                    data-bs-toggle="dropdown" aria-expanded="false">
-                                        Administration
+    <nav class="navbar navbar-expand-lg navbar-dark bg-primary mb-5">
+        <div class="container">
+            {% if user.is_authenticated %}
+               {% url 'technician_dashboard' as url %}
+            {% else %}
+                {% url 'submit_ticket' as url %}
+            {% endif %}
+            <a class="navbar-brand {% if request.path == url %}active{% endif %}" href="{{ url }}" id="navbarBrand">
+                <img src="{% static 'img/etsu-help-desk-logo-grayscale.png' %}" height="125" alt="ETSU logo" title="Submit ticket" style="margin-bottom: -37px;">
+            </a>
+            <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav">
+                <span class="navbar-toggler-icon"></span>
+            </button>
+            <div class="collapse navbar-collapse mt-5 mt-lg-0" id="navbarNav">
+                <ul class="navbar-nav w-100 ms-0 ms-md-5">
+                {% if user.is_authenticated %}
+                    <li class="nav-item ms-auto ms-sm-0">
+                        {% url 'technician_dashboard' as url %}
+                        <a class="nav-link  {% if request.path == url %}active{% endif %}" href="{{ url }}">
+                            <i class="bi bi-speedometer2"></i>
+                            Dashboard
+                        </a>
+                    </li>
+                    <li class="nav-item ms-auto ms-sm-0">
+                        {% url 'asset_list' as url %}
+                        <a class="nav-link {% if request.path == url %}active{% endif %}" href="{{ url }}">
+                            <i class="bi bi-pc-display"></i>
+                            Assets
+                        </a>
+                    </li>
+                    {% if user.user_type == 'MGR' %}
+                        <li class="nav-item dropdown  ms-auto ms-sm-0">
+                            {% url 'manage_users' as url_users %}
+                            {% url 'manage_settings' as url_settings %}
+                            <a class="nav-link dropdown-toggle {% if request.path == url_users or request.path == url_settings %}active{% endif %}" href="#" id="adminDropdown" role="button"
+                            data-bs-toggle="dropdown" aria-expanded="false">
+                                Administration
+                            </a>
+                            <ul class="dropdown-menu p-0" aria-labelledby="adminDropdown">
+                                <li>
+                                    <a class="dropdown-item py-2" href="{{ url_users }}">
+                                        <i class="bi bi-person-fill-gear"></i>
+                                        Manage Users
                                     </a>
-                                    <ul class="dropdown-menu" aria-labelledby="adminDropdown">
-                                        <li>
-                                            <a class="dropdown-item" href="{% url 'manage_users' %}">
-                                                <i class="bi bi-person-fill-gear"></i>
-                                                Manage Users
-                                            </a>
-                                        </li>
-                                        <li>
-                                            <a class="dropdown-item" href="{% url 'manage_settings' %}">
-                                                <i class="bi bi-sliders"></i>
-                                                System Settings
-                                            </a>
-                                        </li>
-                                    </ul>
                                 </li>
-                            {% endif %}
-                            <li class="nav-item dropdown">
-                                <a class="nav-link dropdown-toggle" href="#" id="navbarDropdown" role="button"
-                                data-bs-toggle="dropdown" aria-expanded="false">
-                                    {{ user.get_full_name|default:user.username }}
+                                <li>
+                                    <a class="dropdown-item py-2" href="{{ url_settings }}">
+                                        <i class="bi bi-sliders"></i>
+                                        System Settings
+                                    </a>
+                                </li>
+                            </ul>
+                        </li>
+                    {% endif %}
+                    <li class="nav-item dropdown ms-auto">
+                        <a class="nav-link dropdown-toggle" href="#" id="navbarDropdown" role="button"
+                        data-bs-toggle="dropdown" aria-expanded="false">
+                            {{ user.get_full_name|default:user.username }}
+                        </a>
+                        <ul class="dropdown-menu dropdown-menu-end p-0" aria-labelledby="navbarDropdown">
+                            <li>
+                                <a class="dropdown-item py-2" href="{% url 'logout' %}">
+                                    <i class="bi bi-x-circle-fill me-1"></i>
+                                    Logout
                                 </a>
-                                <ul class="dropdown-menu dropdown-menu-end" aria-labelledby="navbarDropdown">
-                                    <li>
-                                        <a class="dropdown-item" href="{% url 'logout' %}">
-                                            <i class="bi bi-x-circle-fill"></i>
-                                            Logout
-                                        </a>
-                                    </li>
-                                </ul>
                             </li>
-                        {% else %}
-                            <li class="nav-item">
-                                <a class="nav-link" href="{% url 'submit_ticket' %}">Submit Ticket</a>
-                            </li>
-                            <li class="nav-item">
-                                <a class="nav-link" href="{% url 'access_ticket' %}">Check Ticket Status</a>
-                            </li>
-                        {% endif %}
                         </ul>
-                    </div>
-                </div>
-            </nav>
-
-            <div class="container my-4">
-                {% if messages %}
+                    </li>
+                {% else %}
+                <li class="nav-item">
+                        {% url 'submit_ticket' as url %}
+                        <a class="nav-link {% if request.path == url %}active{% endif %}" href="{{ url }}">Submit Ticket</a>
+                    </li>
+                    <li class="nav-item">
+                        {% url 'access_ticket' as url %}
+                        <a class="nav-link {% if request.path == url %}active{% endif %}" href="{{ url }}">Check Ticket Status</a>
+                    </li>
+                {% endif %}
+                </ul>
+            </div>
+        </div>
+    </nav>
+    <div class="page-container  position-relative" id="page-container">
+        <div class="container mb-5">
+            {% if messages %}
+                <div>
                     {% for message in messages %}
-                        <div class="alert alert-{{ message.tags }} alert-dismissible fade show">
+                        <div class="alert alert-{{ message.tags }} alert-dismissible fade show m-0 mb-3">
                             {{ message }}
                             <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
                         </div>
                     {% endfor %}
-                {% endif %}
+                </div>
+            {% endif %}
 
-                {% block content %}{% endblock %}
-            </div>
+            {% block content %}{% endblock %}
         </div>
     </div>
 
     {% with 'img/etsu-johnson-city-tn-blue-ridge-mountains_21t.min.svg' as footer_img_path %}
-    <footer class="pt-3 pb-3 text-right" style="background-image: url('{% static footer_img_path %}');">
+    <footer class="text-right" style="background-image: url('{% static footer_img_path %}');">
     {% endwith %}
         <div class="container">
             <div class="row text-white">
@@ -127,7 +137,7 @@
         let footerImgAnimated = "{% static 'img/etsu-computing.gif' %}";
         let footerImgStatic   = "{% static 'img/etsu-computing.png' %}";
 
-        document.addEventListener('DOMContentLoaded', function() {
+        window.addEventListener('DOMContentLoaded', function() {
             let animatedFooterImage = `<img class="ml-auto" src="` + footerImgAnimated + `" alt="ETSU Computing logo" width="220">`;
             let staticFooterImage   = `<img class="ml-auto p-4" src="` + footerImgStatic + `" alt="ETSU Computing logo" width="190">`;
 
@@ -140,6 +150,24 @@
                 document.getElementById('footerContent').insertAdjacentHTML('afterbegin', animatedFooterImage);
             }
         });
+
+        // DOMContentLoaded executes only after dom is created
+        // Dynamic image insertion might not have completed as yet
+        // onload runs after images are loaded
+        window.onload = () => {
+            // Do this after adjustments above
+            const footerElement = document.querySelector('footer');
+            const navElement = document.querySelector('nav');
+            const footerHeight = footerElement.offsetHeight;
+            const navHeight = navElement.offsetHeight;
+            const navStyle = window.getComputedStyle(navElement);
+            const marginTop = parseInt(navStyle.marginTop, 10);
+            const marginBottom = parseInt(navStyle.marginBottom, 10);
+
+            const totalNavHeight = navHeight + marginTop + marginBottom;
+            const pageContainer = document.querySelector('#page-container');
+            pageContainer.style.minHeight = `calc(100vh - ${footerHeight + totalNavHeight}px)`;                
+        }
     </script>
     {% block extra_js %}{% endblock %}
 </body>

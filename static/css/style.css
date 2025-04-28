@@ -70,19 +70,16 @@
 .fs-900 { font-size: var(--fs-900); }
 
 .ff-regular {
-    font-family: "League Spartan", Georgia, Cambria, 'Times New Roman', Times, serif;
     font-weight: 400;
     font-style: normal;
 }
 
 .ff-semibold {
-    font-family: "League Spartan", Georgia, Cambria, 'Times New Roman', Times, serif;
     font-weight: 500;
     font-style: normal;
 }
 
 .ff-bold {
-    font-family: "League Spartan", Georgia, Cambria, 'Times New Roman', Times, serif;
     font-weight: 600;
     font-style: normal;
 }
@@ -214,44 +211,25 @@ picture {
 }
 /* ----------- End Reset ------------ */
 
-/* Screen reader class: Hide content for sighted users but show for screen reader */
-.sr-only {
-    position: absolute;
-    width: 1px;
-    height: 1px;
-    padding: 0;
-    margin: -1px;
-    overflow: hidden;
-    clip: rect(0,0,0,0);
-    white-space: nowrap;
-    border: 0;
-}
-
 .body-light {
     background-color: hsl(var(--clr-light))!important;
 }
 
-.page-container {
-    position: relative;
-    min-height: 100vh;
-}
-
-.content-wrap {
-    padding-bottom: 19em;
-}
-
 body {
-    font-family: "League Spartan", serif;
-    font-size: 19px;
-    line-height: 1.5;
+    font-family: "League Spartan", Georgia, Cambria, 'Times New Roman', Times, serif;
 }
 
+th, tr {
+    vertical-align: middle;
+}
+.badge {
+    vertical-align: top;
+}
 footer {
     margin: 0;
     bottom: 0!important;
     background-repeat: no-repeat;
     background-size: cover;
-    height: 19em;
 }
 
 input[type=text], input[type=password], input[type=email], input[type='tel'], input[type=url] {
@@ -300,7 +278,6 @@ label, .forms-label {
     border-radius: 10px;
     background-color: white;
     padding: 20px;
-    margin: 4vh auto 0;
     border: 1px solid #ccc;
     word-wrap: break-word;
 }
@@ -326,6 +303,43 @@ label, .forms-label {
     border: 1px solid #ddd;
     border-radius: 10px;
     max-width: 800px;
+}
+
+.border-ccc {
+    border-color: #ccc !important;
+}
+
+.color-666 {
+    color: #666;
+}
+
+.has-info {
+    background-color: #cff4fc;
+}
+
+#id_bitlocker_key::placeholder {
+    opacity: 0.4;
+}
+
+.translate-50-rev {
+    transform: translate(-50%, -55%);
+}
+
+/* Do not show numerical handles on numeric input */
+/* Chrome, Safari, Edge, Opera */
+input::-webkit-outer-spin-button,
+input::-webkit-inner-spin-button {
+  -webkit-appearance: none;
+  margin: 0;
+}
+
+/* Firefox */
+input[type=number] {
+  -moz-appearance: textfield;
+}
+
+.dropdown-item:hover {
+    border-radius: var(--bs-border-radius);
 }
 
 @media only screen and (max-width: 475px) {

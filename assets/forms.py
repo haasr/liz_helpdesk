@@ -8,19 +8,19 @@ class AssetForm(forms.ModelForm):
                  'purchase_date', 'is_active', 'bitlocker_key']
 
         widgets = {
-            'inventory_number': forms.TextInput(attrs={'class': 'form-control'}),
-            'name': forms.TextInput(attrs={'class': 'form-control'}),
-            'type': forms.Select(attrs={'class': 'form-control'}),
-            'location': forms.TextInput(attrs={'class': 'form-control'}),
-            'details': forms.Textarea(attrs={'class': 'form-control', 'rows': 4}),
+            'inventory_number': forms.TextInput(attrs={'class': 'form-control shadow-none'}),
+            'name': forms.TextInput(attrs={'class': 'form-control shadow-none'}),
+            'type': forms.Select(attrs={'class': 'form-control shadow-none'}),
+            'location': forms.TextInput(attrs={'class': 'form-control shadow-none'}),
+            'details': forms.Textarea(attrs={'class': 'form-control shadow-none', 'rows': 8, 'style': 'resize: none;'}),
             'purchase_date': forms.DateInput(attrs={
-                'class': 'form-control', 
+                'class': 'form-control shadow-none', 
                 'type': 'date'
             }),
-            'is_active': forms.CheckboxInput(attrs={'class': 'form-check-input'}),
+            'is_active': forms.CheckboxInput(attrs={'class': 'form-check-input shadow-none'}),
             'bitlocker_key': forms.TextInput(attrs={
-                'class': 'form-control',
-                'placeholder': 'e.g., 123456-123456-123456-123456-123456-123456-123456-123456'
+                'class': 'form-control shadow-none',
+                'placeholder': 'e.g.: 123456-123456-123456-123456-123456-123456-123456-123456'
             }),
         }
 

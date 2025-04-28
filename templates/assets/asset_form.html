@@ -10,11 +10,11 @@
                 <h2 class="card-title mb-0">{% if is_create %}Add New Asset{% else %}Edit Asset {{ asset.inventory_number }}{% endif %}</h2>
             </div>
             <div class="card-body">
-                <form method="post">
+                <form method="post" class="d-flex flex-column gap-2">
                     {% csrf_token %}
                     
-                    <div class="row">
-                        <div class="col-md-6 mb-3">
+                    <div class="row gap-2 gap-md-0">
+                        <div class="col-md-6">
                             <label for="{{ form.inventory_number.id_for_label }}" class="form-label{% if form.inventory_number.field.required %} required-field{% endif %}">
                                 {{ form.inventory_number.label }}
                             </label>
@@ -26,7 +26,7 @@
                             {% endif %}
                         </div>
                         
-                        <div class="col-md-6 mb-3">
+                        <div class="col-md-6">
                             <label for="{{ form.name.id_for_label }}" class="form-label{% if form.name.field.required %} required-field{% endif %}">
                                 {{ form.name.label }}
                             </label>
@@ -39,8 +39,8 @@
                         </div>
                     </div>
                     
-                    <div class="row">
-                        <div class="col-md-6 mb-3">
+                    <div class="row gap-2 gap-md-0">
+                        <div class="col-md-6">
                             <label for="{{ form.type.id_for_label }}" class="form-label{% if form.type.field.required %} required-field{% endif %}">
                                 {{ form.type.label }}
                             </label>
@@ -52,7 +52,7 @@
                             {% endif %}
                         </div>
                         
-                        <div class="col-md-6 mb-3">
+                        <div class="col-md-6">
                             <label for="{{ form.location.id_for_label }}" class="form-label{% if form.location.field.required %} required-field{% endif %}">
                                 {{ form.location.label }}
                             </label>
@@ -65,8 +65,8 @@
                         </div>
                     </div>
                     
-                    <div class="row">
-                        <div class="col-md-6 mb-3">
+                    <div class="row gap-2 gap-md-0">
+                        <div class="col-md-6">
                             <label for="{{ form.purchase_date.id_for_label }}" class="form-label{% if form.purchase_date.field.required %} required-field{% endif %}">
                                 {{ form.purchase_date.label }}
                             </label>
@@ -78,10 +78,10 @@
                             {% endif %}
                         </div>
                         
-                        <div class="col-md-6 mb-3 d-flex align-items-center">
-                            <div class="form-check mt-4">
+                        <div class="col-md-6 d-flex align-items-end mt-3 mt-md-0">
+                            <div class="form-check">
                                 {{ form.is_active }}
-                                <label class="form-check-label" for="{{ form.is_active.id_for_label }}">
+                                <label class="form-check-label align-text-top" for="{{ form.is_active.id_for_label }}">
                                     Active Asset
                                 </label>
                             </div>
@@ -93,49 +93,47 @@
                         </div>
                     </div>
                     
-                    <div class="mb-4">
-                        <label for="{{ form.details.id_for_label }}" class="form-label{% if form.details.field.required %} required-field{% endif %}">
-                            {{ form.details.label }}
-                        </label>
-                        {{ form.details }}
-                        {% if form.details.errors %}
-                            <div class="invalid-feedback d-block">
-                                {{ form.details.errors|join:", " }}
-                            </div>
-                        {% endif %}
+                    <div class="row gap-2 gap-md-0">
+                        <div class="col-12">
+                            <label for="{{ form.details.id_for_label }}" class="form-label{% if form.details.field.required %} required-field{% endif %}">
+                                {{ form.details.label }}
+                            </label>
+                            {{ form.details }}
+                            {% if form.details.errors %}
+                                <div class="invalid-feedback d-block">
+                                    {{ form.details.errors|join:", " }}
+                                </div>
+                            {% endif %}
+                        </div>
                     </div>
 
                     {% if 'bitlocker_key' in form.fields %}
-                    <div class="mb-4">
-                        <label for="{{ form.bitlocker_key.id_for_label }}" class="form-label">
-                            BitLocker Recovery Key
-                        </label>
-                        {{ form.bitlocker_key }}
-                        <div class="form-text">
-                            48-digit recovery key, usually formatted as 8 groups of 6 digits.
-                            Example: 123456-123456-123456-123456-123456-123456-123456-123456
-                        </div>
-                        {% if form.bitlocker_key.errors %}
-                            <div class="invalid-feedback d-block">
-                                {{ form.bitlocker_key.errors|join:", " }}
+                        <div class="row gap-2 gap-md-0">
+                            <div class="col-12">
+                                <label for="{{ form.bitlocker_key.id_for_label }}" class="form-label">
+                                    BitLocker Recovery Key
+                                </label>
+                                {{ form.bitlocker_key }}
+                                <div class="form-text">
+                                    48-digit recovery key, usually formatted as 8 groups of 6 digits.
+                                </div>
+                                {% if form.bitlocker_key.errors %}
+                                    <div class="invalid-feedback d-block">
+                                        {{ form.bitlocker_key.errors|join:", " }}
+                                    </div>
+                                {% endif %}
                             </div>
-                        {% endif %}
-                    </div>
+                        </div>
                     {% endif %}
 
-                    <div class="d-flex gap-2">
-                        <button type="submit" class="btn bttn-primary">{% if is_create %}Create Asset{% else %}Update Asset{% endif %}</button>
-                        {% if is_create %}
-                            <a href="{% url 'asset_list' %}" class="btn bttn-outline-edit">
+                    <div class="row gap-2 gap-md-0 mt-3">
+                        <div class="col-12 d-flex gap-1 justify-content-end">
+                            <button type="submit" class="btn bttn-primary">{% if is_create %}Create Asset{% else %}Update Asset{% endif %}</button>
+                            <a href="{% if is_create %}{% url 'asset_list' %}{% else %}{% url 'asset_detail' asset.inventory_number %}{% endif %}" class="btn bttn-outline-edit">
                                 <i class="bi bi-box-arrow-in-left"></i>
                                 Cancel
                             </a>
-                        {% else %}
-                            <a href="{% url 'asset_detail' asset.inventory_number %}" class="btn bttn-outline-edit">
-                                <i class="bi bi-box-arrow-in-left"></i>
-                                Cancel
-                            </a>
-                        {% endif %}
+                        </div>
                     </div>
                 </form>
             </div>

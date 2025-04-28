@@ -30,35 +30,34 @@ class SettingsForm(forms.ModelForm):
         ]
         widgets = {
             'smtp_password': forms.PasswordInput(render_value=True),
+            'smtp_port': forms.TextInput(attrs={'class': 'form-control shadow-none'})
         }
 
 class CustomLoginForm(AuthenticationForm):
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
         self.fields['username'].widget.attrs.update({
-            'class': 'form-control',
+            'class': 'form-control shadow-none',
             'placeholder': 'Username'
         })
         self.fields['password'].widget.attrs.update({
-            'class': 'form-control',
+            'class': 'form-control shadow-none',
             'placeholder': 'Password'
         })
 
 class TechnicianCreationForm(UserCreationForm):
-    department = forms.CharField(
-        max_length=100,
-        widget=forms.TextInput(attrs={'class': 'form-control'})
-    )
     email = forms.EmailField(
-        widget=forms.EmailInput(attrs={'class': 'form-control'})
+        widget=forms.EmailInput(attrs={'class': 'form-control shadow-none'})
     )
     class Meta:
         model = User
-        fields = ('username', 'email', 'first_name', 'last_name', 'department')
+        # Remove if username/password is not needed for tech
+        fields = ('username', 'email', 'first_name', 'last_name', 'password1', 'password2', 'department')
         widgets = {
-            'username': forms.TextInput(attrs={'class': 'form-control'}),
-            'first_name': forms.TextInput(attrs={'class': 'form-control'}),
-            'last_name': forms.TextInput(attrs={'class': 'form-control'}),
+            'username': forms.TextInput(attrs={'class': 'form-control shadow-none'}),
+            'first_name': forms.TextInput(attrs={'class': 'form-control shadow-none'}),
+            'last_name': forms.TextInput(attrs={'class': 'form-control shadow-none'}),
+            'department': forms.TextInput(attrs={'class': 'form-control shadow-none'}),
         }
 
     def __init__(self, *args, **kwargs):
@@ -75,12 +74,12 @@ class TechnicianCreationForm(UserCreationForm):
         passwd2 = self.data['password2']
 
         if (passwd2 == '') and (passwd1 != ''):
-            self.add_error('password1', '❗ Please fill out this field')
+            self.add_error('password1', '❗Please fill out this field')
 
         if passwd1 and passwd2:
             # Check that passwords match
             if passwd1 != passwd2:
-                self.add_error('password2', '❗ The passwords do not match')
+                self.add_error('password2', '❗The passwords do not match')
 
             # Check password requirements
             err_list = []
@@ -112,23 +111,23 @@ class SystemManagerCreationForm(UserCreationForm):
     departments = forms.CharField(
         max_length=200,
         help_text='Comma-separated list of departments',
-        widget=forms.TextInput(attrs={'class': 'form-control'})
+        widget=forms.TextInput(attrs={'class': 'form-control shadow-none'})
     )
     job_title = forms.CharField(
         max_length=100,
-        widget=forms.TextInput(attrs={'class': 'form-control'})
+        widget=forms.TextInput(attrs={'class': 'form-control shadow-none'})
     )
     email = forms.EmailField(
-        widget=forms.EmailInput(attrs={'class': 'form-control'})
+        widget=forms.EmailInput(attrs={'class': 'form-control shadow-none'})
     )
 
     class Meta:
         model = User
         fields = ('username', 'email', 'first_name', 'last_name')
         widgets = {
-            'username': forms.TextInput(attrs={'class': 'form-control'}),
-            'first_name': forms.TextInput(attrs={'class': 'form-control'}),
-            'last_name': forms.TextInput(attrs={'class': 'form-control'}),
+            'username': forms.TextInput(attrs={'class': 'form-control shadow-none'}),
+            'first_name': forms.TextInput(attrs={'class': 'form-control shadow-none'}),
+            'last_name': forms.TextInput(attrs={'class': 'form-control shadow-none'}),
         }
 
     def clean_email(self):

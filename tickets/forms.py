@@ -24,25 +24,26 @@ class MultipleFileField(forms.FileField):
 class TicketSubmissionForm(forms.ModelForm):
     description = forms.CharField(
         widget=forms.Textarea(attrs={
-            'rows': 4,
-            'class': 'form-control',
+            'rows': 8,
+            'class': 'form-control shadow-none',
+            'style': 'resize: none;',
             'placeholder': 'Please describe your issue or request in detail'
         })
     )
 
     type = forms.ChoiceField(
         choices = [('', 'Select a type...')] + [(t.value, t.label) for t in TicketType],
-        widget=forms.Select(attrs={'class': 'form-control'})
+        widget=forms.Select(attrs={'class': 'form-control shadow-none color-666'})
     )
 
     subtype = forms.ChoiceField(
         choices = [('', 'Select a subtype...')] + [(t.value, t.label) for t in TicketSubType],
-        widget=forms.Select(attrs={'class': 'form-control'})
+        widget=forms.Select(attrs={'class': 'form-control shadow-none color-666'})
     )
 
     item = forms.ChoiceField(
         choices=[('', 'Select an item...')] + TicketItemChoices.ALL_ITEM_CHOICES,
-        widget=forms.Select(attrs={'class': 'form-control'})
+        widget=forms.Select(attrs={'class': 'form-control shadow-none color-666'})
     )
 
     attachments = MultipleFileField(
@@ -54,7 +55,7 @@ class TicketSubmissionForm(forms.ModelForm):
         required=False,
         max_length=50,
         widget=forms.TextInput(attrs={
-            'class': 'form-control',
+            'class': 'form-control shadow-none color-666',
             'placeholder': 'Optional: Enter asset inventory number if relevant'
         }),
         help_text='If your request relates to a specific asset, enter its inventory number'
@@ -64,7 +65,7 @@ class TicketSubmissionForm(forms.ModelForm):
         required=False,
         choices=[('', 'Select asset type...')] + [(t.value, t.label) for t in AssetType],
         widget=forms.Select(attrs={
-            'class': 'form-control',
+            'class': 'form-control shadow-none color-666',
             'disabled': 'disabled'  # Initially disabled, will be enabled by JavaScript when inventory_number is filled
         })
     )
@@ -79,19 +80,19 @@ class TicketSubmissionForm(forms.ModelForm):
         }
         widgets = {
             'requestor_email': forms.EmailInput(attrs={
-                'class': 'form-control',
+                'class': 'form-control shadow-none',
                 'placeholder': 'your.email@etsu.edu'
             }),
             'requestor_phone': forms.TextInput(attrs={
-                'class': 'form-control',
+                'class': 'form-control shadow-none',
                 'placeholder': '(Optional) Phone number'
             }),
             'requestor_name': forms.TextInput(attrs={
-                'class': 'form-control',
+                'class': 'form-control shadow-none',
                 'placeholder': 'Your full name'
             }),
             'title': forms.TextInput(attrs={
-                'class': 'form-control',
+                'class': 'form-control shadow-none',
                 'placeholder': 'Brief subject line for your ticket'
             }),
         }
@@ -123,17 +124,17 @@ class TicketSubmissionForm(forms.ModelForm):
 class TicketAccessForm(forms.Form):
     email = forms.EmailField(
         label='Email Address',
-        widget=forms.EmailInput(attrs={'placeholder': 'your.email@etsu.edu'})
+        widget=forms.EmailInput(attrs={'placeholder': 'your.email@etsu.edu', 'class': 'form-control shadow-none'})
     )
     ticket_number = forms.CharField(
         label='Ticket Number',
         max_length=20,
-        widget=forms.TextInput(attrs={'placeholder': 'YYYY-XXXX'})
+        widget=forms.TextInput(attrs={'placeholder': 'YYYY-XXXX', 'class': 'form-control shadow-none'})
     )
     access_code = forms.CharField(
         label='Access Code',
         max_length=6,
-        widget=forms.TextInput(attrs={'placeholder': 'Access code from email'})
+        widget=forms.TextInput(attrs={'placeholder': 'Access code from email', 'class': 'form-control shadow-none'})
     )
 
 class TicketMessageForm(forms.ModelForm):
@@ -141,5 +142,5 @@ class TicketMessageForm(forms.ModelForm):
         model = TicketMessage
         fields = ['content']
         widgets = {
-            'content': forms.Textarea(attrs={'rows': 4, 'placeholder': 'Type your message here...'})
+            'content': forms.Textarea(attrs={'rows': 8, 'placeholder': 'Type your message here...', 'style': 'resize: none;', 'class': 'form-control shadow-none'})
         }
