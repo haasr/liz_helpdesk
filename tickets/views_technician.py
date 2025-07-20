@@ -6,7 +6,7 @@ from django.db.models import Q
 from django.utils.timezone import now
 from .models import Ticket, TicketMessage
 from accounts.models import Settings
-from .forms import TicketMessageForm
+from .forms import *
 from .notifications import NotificationManager
 from django.contrib.auth import get_user_model
 from assets.models import Asset
@@ -87,6 +87,60 @@ def dashboard(request):
         'ticket_type_choices': Ticket.type.field.choices,
     }
     return render(request, 'tickets/technician/dashboard.html', context)
+
+@login_required
+def create_ticket(request):
+    """Allow technicians to create tickets on behalf of users"""
+    if request.method == 'POST':
+        form = TechnicianTicketForm(request.POST, request.FILES)
+        if form.is_valid():
+            # Create ticket
+            ticket = form.save()
+
+            # Handle inventory number and assets
+            inventory_number = form.cleaned_data.get('inventory_number')
+            asset_type = form.cleaned_data.get('asset_type')
+
+            if inventory_number:
+                # Try to find existing asset
+                asset = None
+                try:
+                    asset = Asset.objects.get(inventory_number=inventory_number)
+                    # Optionally update the asset type if different
+                    if asset_type and asset.type != asset_type:
+                        asset.type = asset_type
+                        asset.save()
+                        messages.info(request, f"Updated asset type for {inventory_number}")
+                except Asset.DoesNotExist:
+                    # Create a new asset with user-provided type
+                    asset = Asset.objects.create(
+                        inventory_number=inventory_number,
+                        name=f"Asset {inventory_number}",
+                        type=asset_type,
+                        location='Unknown',
+                        details=f"Created from ticket {ticket.ticket_number} by {request.user.get_full_name()}"
+                    )
+                    messages.info(request, f"Created new asset with inventory number {inventory_number}")
+
+                # Associate asset with ticket
+                if asset:
+                    ticket.assets.add(asset)
+
+            # Handle attachments
+            files = request.FILES.getlist('attachments')
+            for file in files:
+                TicketAttachment.objects.create(ticket=ticket, file=file)
+
+            # Send notification
+            notification_manager = NotificationManager()
+            notification_manager.notify_ticket_created(ticket)
+
+            messages.success(request, f'Ticket {ticket.ticket_number} created successfully!')
+            return redirect('manage_ticket', ticket_number=ticket.ticket_number)
+    else:
+        form = TechnicianTicketForm()
+
+    return render(request, 'tickets/technician/create_ticket.html', {'form': form})
 
 @login_required
 def manage_ticket(request, ticket_number):

@@ -6,7 +6,6 @@ def update_email_settings():
     This should be called when SMTP settings change or before sending emails.
     """
     from accounts.models import Settings
-    
     db_settings = Settings.objects.first()
     if not db_settings:
         return

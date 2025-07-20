@@ -113,7 +113,7 @@
                                    View
                                 </a>
                                 {% if settings.can_modify_all_assets or settings.can_modify_assigned_assets %}
-                                    <a href="{% url 'asset_update' asset.inventory_number %}"
+                                    <a href="{% url 'asset_update' asset.inventory_number 0 %}"
                                        class="btn btn-sm bttn-outline-edit">
                                        <i class="bi bi-pencil-square"></i> 
                                        Edit
@@ -162,7 +162,7 @@
                                            View
                                         </a>
                                         {% if settings.can_modify_all_assets or settings.can_modify_assigned_assets %}
-                                            <a href="{% url 'asset_update' asset.inventory_number %}"
+                                            <a href="{% url 'asset_update' asset.inventory_number 0 %}"
                                                class="btn btn-sm bttn-outline-edit">
                                                <i class="bi bi-pencil-square"></i> 
                                                Edit

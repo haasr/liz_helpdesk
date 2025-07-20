@@ -123,12 +123,12 @@ def asset_create(request):
     
     context = {
         'form': form,
-        'is_create': True,
+        'back_to_asset_detail': False,
     }
     return render(request, 'assets/asset_form.html', context)
 
 @login_required
-def asset_update(request, inventory_number):
+def asset_update(request, inventory_number, back_to_asset_detail=1):
     """View for updating existing assets"""
     asset = get_object_or_404(Asset, inventory_number=inventory_number)
     settings = Settings.objects.first()
@@ -154,11 +154,11 @@ def asset_update(request, inventory_number):
             return redirect('asset_detail', inventory_number=asset.inventory_number)
     else:
         form = AssetForm(instance=asset, user=request.user)
-    
+
     context = {
         'form': form,
         'asset': asset,
-        'is_create': False,
+        'back_to_asset_detail': bool(back_to_asset_detail),
     }
     return render(request, 'assets/asset_form.html', context)
 

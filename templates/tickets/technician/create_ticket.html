@@ -1,0 +1,319 @@
+# templates/tickets/technician/create_ticket.html
+{% extends '../../base.html' %}
+
+{% block title %}Create Ticket - ETSU Computing Helpdesk{% endblock %}
+
+{% block content %}
+<div class="row">
+    <div class="col-2"></div>
+    <div class="col-md">
+        <div class="container-fluid mb-3 fs-400" title="Breadcrumb navigation">
+            <a class="text-secondary-blue" href="{% url 'technician_dashboard' %}" title="Back to Dashboard">Dashboard</a>
+            » <span class="ff-sans-bolder">Create New Ticket</span>
+        </div>
+    </div>
+</div>
+<div class="row justify-content-center">
+    <div class="col-md-8">
+        <div class="card">
+            <div class="card-header">
+                <h2 class="card-title mb-0">Create New Ticket</h2>
+                <small class="text-muted">Create a ticket on behalf of a user</small>
+            </div>
+            <div class="card-body">
+                <form method="post" enctype="multipart/form-data">
+                    {% csrf_token %}
+                    
+                    <h5 class="mb-3">Requestor Information</h5>
+                    <div class="row">
+                        <div class="col-md-6 mb-3">
+                            <label for="{{ form.requestor_name.id_for_label }}" class="form-label{% if form.requestor_name.field.required %} required-field{% endif %}">
+                                {{ form.requestor_name.label }}
+                            </label>
+                            {{ form.requestor_name }}
+                            {% if form.requestor_name.errors %}
+                                <div class="invalid-feedback d-block">
+                                    {{ form.requestor_name.errors|join:", " }}
+                                </div>
+                            {% endif %}
+                        </div>
+                        
+                        <div class="col-md-6 mb-3">
+                            <label for="{{ form.requestor_email.id_for_label }}" class="form-label{% if form.requestor_email.field.required %} required-field{% endif %}">
+                                {{ form.requestor_email.label }}
+                            </label>
+                            {{ form.requestor_email }}
+                            {% if form.requestor_email.errors %}
+                                <div class="invalid-feedback d-block">
+                                    {{ form.requestor_email.errors|join:", " }}
+                                </div>
+                            {% endif %}
+                        </div>
+                    </div>
+                    
+                    <div class="mb-3">
+                        <label for="{{ form.requestor_phone.id_for_label }}" class="form-label">
+                            {{ form.requestor_phone.label }}
+                        </label>
+                        {{ form.requestor_phone }}
+                        {% if form.requestor_phone.errors %}
+                            <div class="invalid-feedback d-block">
+                                {{ form.requestor_phone.errors|join:", " }}
+                            </div>
+                        {% endif %}
+                    </div>
+
+                    <hr class="my-4">
+                    
+                    <h5 class="mb-3">Ticket Details</h5>
+                    <div class="mb-3">
+                        <label for="{{ form.title.id_for_label }}" class="form-label{% if form.title.field.required %} required-field{% endif %}">
+                            {{ form.title.label }}
+                        </label>
+                        {{ form.title }}
+                        {% if form.title.errors %}
+                            <div class="invalid-feedback d-block">
+                                {{ form.title.errors|join:", " }}
+                            </div>
+                        {% endif %}
+                    </div>
+                    
+                    <div class="mb-3">
+                        <label for="{{ form.description.id_for_label }}" class="form-label{% if form.description.field.required %} required-field{% endif %}">
+                            {{ form.description.label }}
+                        </label>
+                        {{ form.description }}
+                        {% if form.description.errors %}
+                            <div class="invalid-feedback d-block">
+                                {{ form.description.errors|join:", " }}
+                            </div>
+                        {% endif %}
+                    </div>
+                    
+                    <div class="row">
+                        <div class="col-md-4 mb-3">
+                            <label for="{{ form.type.id_for_label }}" class="form-label{% if form.type.field.required %} required-field{% endif %}">
+                                {{ form.type.label }}
+                            </label>
+                            {{ form.type }}
+                            {% if form.type.errors %}
+                                <div class="invalid-feedback d-block">
+                                    {{ form.type.errors|join:", " }}
+                                </div>
+                            {% endif %}
+                        </div>
+                        
+                        <div class="col-md-4 mb-3">
+                            <label for="{{ form.subtype.id_for_label }}" class="form-label{% if form.subtype.field.required %} required-field{% endif %}">
+                                {{ form.subtype.label }}
+                            </label>
+                            {{ form.subtype }}
+                            {% if form.subtype.errors %}
+                                <div class="invalid-feedback d-block">
+                                    {{ form.subtype.errors|join:", " }}
+                                </div>
+                            {% endif %}
+                        </div>
+                        
+                        <div class="col-md-4 mb-3">
+                            <label for="{{ form.item.id_for_label }}" class="form-label{% if form.item.field.required %} required-field{% endif %}">
+                                {{ form.item.label }}
+                            </label>
+                            {{ form.item }}
+                            {% if form.item.errors %}
+                                <div class="invalid-feedback d-block">
+                                    {{ form.item.errors|join:", " }}
+                                </div>
+                            {% endif %}
+                        </div>
+                    </div>
+
+                    <hr class="my-4">
+                    
+                    <h5 class="mb-3">Asset Information (Optional)</h5>
+                    <div class="row">
+                        <div class="col-md-6 mb-3">
+                            <label for="{{ form.inventory_number.id_for_label }}" class="form-label">
+                                {{ form.inventory_number.label }}
+                            </label>
+                            {{ form.inventory_number }}
+                            {% if form.inventory_number.help_text %}
+                                <div class="form-text">{{ form.inventory_number.help_text }}</div>
+                            {% endif %}
+                            {% if form.inventory_number.errors %}
+                                <div class="invalid-feedback d-block">
+                                    {{ form.inventory_number.errors|join:", " }}
+                                </div>
+                            {% endif %}
+                        </div>
+                        
+                        <div class="col-md-6 mb-3">
+                            <label for="{{ form.asset_type.id_for_label }}" class="form-label">
+                                {{ form.asset_type.label }}
+                            </label>
+                            {{ form.asset_type }}
+                            {% if form.asset_type.help_text %}
+                                <div class="form-text">{{ form.asset_type.help_text }}</div>
+                            {% endif %}
+                            {% if form.asset_type.errors %}
+                                <div class="invalid-feedback d-block">
+                                    {{ form.asset_type.errors|join:", " }}
+                                </div>
+                            {% endif %}
+                        </div>
+                    </div>
+                    
+                    <div class="mb-4">
+                        <label for="{{ form.attachments.id_for_label }}" class="form-label">
+                            {{ form.attachments.label }}
+                        </label>
+                        {{ form.attachments }}
+                        {% if form.attachments.help_text %}
+                            <div class="form-text">{{ form.attachments.help_text }}</div>
+                        {% endif %}
+                        {% if form.attachments.errors %}
+                            <div class="invalid-feedback d-block">
+                                {{ form.attachments.errors|join:", " }}
+                            </div>
+                        {% endif %}
+                    </div>
+                    
+                    <div class="d-flex gap-2">
+                        <button type="submit" class="btn bttn-primary">Create Ticket</button>
+                        <a href="{% url 'technician_dashboard' %}" class="btn bttn-outline-edit">Cancel</a>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}
+
+{% block extra_js %}
+<script>
+// Copy the same JavaScript from submit_ticket.html for type/subtype/item interaction
+const itemChoices = {
+    'NET': [
+        ['connectivity', 'Internet/Network Connectivity'],
+        ['wifi', 'WiFi Issues'],
+        ['ethernet', 'Ethernet Connection'],
+        ['vpn', 'VPN Access'],
+        ['router', 'Router/Switch Issues'],
+        ['performance', 'Network Performance'],
+        ['other', 'Other Network Issue']
+    ],
+    'WRK': [
+        ['setup', 'New Computer Setup'],
+        ['hardware', 'Hardware Issues'],
+        ['remote_desktop', 'Remote Desktop'],
+        ['makemeadmin', 'MakeMeAdmin Access'],
+        ['monitors', 'Monitor/Display Issues'],
+        ['peripherals', 'Keyboard/Mouse/Peripherals'],
+        ['other', 'Other Workstation Issue']
+    ],
+    'SRV': [
+        ['deploy', 'Server Deployment'],
+        ['access', 'Server Access'],
+        ['maintenance', 'Server Maintenance'],
+        ['backup', 'Backup Issues'],
+        ['performance', 'Performance Issues'],
+        ['storage', 'Storage/Space Issues'],
+        ['other', 'Other Server Issue']
+    ],
+    'PRT': [
+        ['connect', 'Printer Connection'],
+        ['install', 'Printer Installation'],
+        ['error', 'Printer Errors'],
+        ['supplies', 'Printer Supplies'],
+        ['quality', 'Print Quality Issues'],
+        ['other', 'Other Printer Issue']
+    ],
+    'SFT': [
+        ['install', 'Software Installation'],
+        ['update', 'Software Updates'],
+        ['license', 'License Management'],
+        ['config', 'Software Configuration'],
+        ['compatibility', 'Compatibility Issues'],
+        ['other', 'Other Software Issue']
+    ],
+    'ACC': [
+        ['access', 'Account Access'],
+        ['permissions', 'Permission Issues'],
+        ['password', 'Password Reset'],
+        ['creation', 'Account Creation'],
+        ['software_access', 'Software Access Rights'],
+        ['other', 'Other Account Issue']
+    ],
+    'LAB': [
+        ['instructor_ws', 'Instructor Workstation'],
+        ['instructor_periph', 'Instructor Peripherals'],
+        ['projector', 'Projector'],
+        ['av_equipment', 'A/V Equipment (Control Panel, Microphone)'],
+        ['lab_computer', 'Lab Computer'],
+        ['lab_periph', 'Lab Peripherals'],
+        ['other', 'Other Lab Issue']
+    ]
+};
+
+document.addEventListener('DOMContentLoaded', function() {
+    const typeSelect = document.getElementById('id_type');
+    const subtypeSelect = document.getElementById('id_subtype');
+    const itemSelect = document.getElementById('id_item');
+    const inventoryField = document.getElementById('id_inventory_number');
+    const assetTypeField = document.getElementById('id_asset_type');
+
+    // Handle type/subtype/item dropdowns
+    function updateItemChoices() {
+        const selectedSubtype = subtypeSelect.value;
+        const choices = itemChoices[selectedSubtype] || [];
+        
+        itemSelect.innerHTML = '<option value="">Select an item...</option>';
+        
+        choices.forEach(([value, label]) => {
+            const option = new Option(label, value);
+            itemSelect.add(option);
+        });
+
+        itemSelect.disabled = !selectedSubtype;
+    }
+
+    subtypeSelect.disabled = !typeSelect.value;
+    updateItemChoices();
+
+    typeSelect.addEventListener('change', function() {
+        subtypeSelect.disabled = !this.value;
+        if (!this.value) {
+            subtypeSelect.value = '';
+            subtypeSelect.dispatchEvent(new Event('change'));
+        }
+    });
+
+    subtypeSelect.addEventListener('change', updateItemChoices);
+
+    // Handle asset type field
+    function updateAssetTypeField() {
+        if (inventoryField.value.trim()) {
+            assetTypeField.disabled = false;
+            assetTypeField.required = true;
+            
+            const assetTypeLabel = document.querySelector('label[for="id_asset_type"]');
+            if (assetTypeLabel && !assetTypeLabel.classList.contains('required-field')) {
+                assetTypeLabel.classList.add('required-field');
+            }
+        } else {
+            assetTypeField.disabled = true;
+            assetTypeField.required = false;
+            assetTypeField.value = '';
+            
+            const assetTypeLabel = document.querySelector('label[for="id_asset_type"]');
+            if (assetTypeLabel) {
+                assetTypeLabel.classList.remove('required-field');
+            }
+        }
+    }
+    
+    updateAssetTypeField();
+    inventoryField.addEventListener('input', updateAssetTypeField);
+});
+</script>
+{% endblock %}

@@ -24,10 +24,9 @@ class MultipleFileField(forms.FileField):
 class TicketSubmissionForm(forms.ModelForm):
     description = forms.CharField(
         widget=forms.Textarea(attrs={
-            'rows': 8,
-            'class': 'form-control shadow-none',
-            'style': 'resize: none;',
-            'placeholder': 'Please describe your issue or request in detail'
+            'rows': 4,
+            'class': 'form-control',
+            'placeholder': 'Please describe the issue or request in detail'
         })
     )
 
@@ -58,7 +57,6 @@ class TicketSubmissionForm(forms.ModelForm):
             'class': 'form-control shadow-none color-666',
             'placeholder': 'Optional: Enter asset inventory number if relevant'
         }),
-        help_text='If your request relates to a specific asset, enter its inventory number'
     )
     
     asset_type = forms.ChoiceField(
@@ -67,7 +65,8 @@ class TicketSubmissionForm(forms.ModelForm):
         widget=forms.Select(attrs={
             'class': 'form-control shadow-none color-666',
             'disabled': 'disabled'  # Initially disabled, will be enabled by JavaScript when inventory_number is filled
-        })
+        }),
+        help_text='You must enter an inventory number before selecting asset type'
     )
 
     class Meta:
@@ -120,6 +119,110 @@ class TicketSubmissionForm(forms.ModelForm):
             if file.size > 5 * 1024 * 1024:  # 5MB limit
                 raise forms.ValidationError(f'File {file.name} is too large. Maximum size is 5MB.')
         return files
+
+class TechnicianTicketForm(forms.ModelForm):
+    description = forms.CharField(
+        widget=forms.Textarea(attrs={
+            'rows': 4,
+            'class': 'form-control',
+            'placeholder': 'Please describe the issue or request in detail'
+        })
+    )
+
+    type = forms.ChoiceField(
+        choices=[('', 'Select a type...')] + [(t.value, t.label) for t in TicketType],
+        widget=forms.Select(attrs={'class': 'form-control'})
+    )
+
+    subtype = forms.ChoiceField(
+        choices=[('', 'Select a subtype...')] + [(t.value, t.label) for t in TicketSubType],
+        widget=forms.Select(attrs={'class': 'form-control'})
+    )
+
+    item = forms.ChoiceField(
+        choices=[('', 'Select an item...')],
+        widget=forms.Select(attrs={'class': 'form-control'})
+    )
+
+    inventory_number = forms.CharField(
+        required=False,
+        max_length=50,
+        widget=forms.TextInput(attrs={
+            'class': 'form-control',
+            'placeholder': 'Optional: Enter asset inventory number if relevant'
+        }),
+        help_text='If this ticket relates to a specific asset, enter its inventory number'
+    )
+
+    asset_type = forms.ChoiceField(
+        required=False,
+        choices=[('', 'Select asset type...')] + [(t.value, t.label) for t in AssetType],
+        widget=forms.Select(attrs={
+            'class': 'form-control',
+            'disabled': 'disabled'
+        }),
+        help_text='You must enter an inventory number before selecting asset type'
+    )
+
+    attachments = MultipleFileField(
+        required=False,
+        validators=[FileExtensionValidator(allowed_extensions=['pdf', 'doc', 'docx', 'txt', 'png', 'jpg', 'jpeg'])],
+        help_text='Allowed file types: PDF, DOC, DOCX, TXT, PNG, JPG. Max size: 5MB per file.'
+    )
+
+    class Meta:
+        model = Ticket
+        fields = ['requestor_email', 'requestor_phone', 'requestor_name',
+                 'title', 'description', 'type', 'subtype', 'item',
+                 'inventory_number', 'asset_type']
+        labels = {
+            'title': 'Subject',
+        }
+        widgets = {
+            'requestor_email': forms.EmailInput(attrs={
+                'class': 'form-control',
+                'placeholder': 'username@etsu.edu'
+            }),
+            'requestor_phone': forms.TextInput(attrs={
+                'class': 'form-control',
+                'placeholder': '(Optional) Phone number'
+            }),
+            'requestor_name': forms.TextInput(attrs={
+                'class': 'form-control',
+                'placeholder': 'Requestor full name'
+            }),
+            'title': forms.TextInput(attrs={
+                'class': 'form-control',
+                'placeholder': 'Brief subject line for the ticket'
+            }),
+        }
+
+    def __init__(self, *args, **kwargs):
+        super().__init__(*args, **kwargs)
+
+        # Get all item choices for form validation
+        all_items = []
+        for subtype_choices in TicketItemChoices.SUBTYPE_TO_ITEMS.values():
+            all_items.extend(subtype_choices)
+
+        self.fields['item'].choices = [('', 'Select an item...')] + list(set(all_items))
+
+    def clean_requestor_email(self):
+        email = self.cleaned_data.get('requestor_email')
+        if not email.endswith('@etsu.edu'):
+            raise forms.ValidationError('Please use an ETSU email address (@etsu.edu)')
+        return email
+
+    def clean(self):
+        cleaned_data = super().clean()
+        inventory_number = cleaned_data.get('inventory_number')
+        asset_type = cleaned_data.get('asset_type')
+
+        # If inventory number is provided, asset type is required
+        if inventory_number and not asset_type:
+            self.add_error('asset_type', 'Asset type is required when an inventory number is provided')
+
+        return cleaned_data
 
 class TicketAccessForm(forms.Form):
     email = forms.EmailField(

@@ -67,9 +67,9 @@ def submit_ticket(request):
     
     return render(request, 'tickets/submit_ticket.html', {'form': form})
 
-def view_ticket(request, ticket_number):
+def view_ticket(request, ticket_number, access_code):
     """Public view for requestors to view their tickets"""
-    ticket = get_object_or_404(Ticket, ticket_number=ticket_number)
+    ticket = get_object_or_404(Ticket, ticket_number=ticket_number, access_code=access_code)
     notification_manager = NotificationManager()
 
     if request.method == 'POST':
@@ -115,7 +115,7 @@ def access_ticket(request):
                     requestor_email=email,
                     access_code=access_code
                 )
-                return redirect('view_ticket', ticket_number=ticket.ticket_number)
+                return redirect('view_ticket', ticket_number=ticket.ticket_number, access_code=access_code)
             except Ticket.DoesNotExist:
                 messages.error(request, 'Invalid ticket information. Please check your email and try again.')
     else:

@@ -129,7 +129,7 @@
                     <div class="row gap-2 gap-md-0 mt-3">
                         <div class="col-12 d-flex gap-1 justify-content-end">
                             <button type="submit" class="btn bttn-primary">{% if is_create %}Create Asset{% else %}Update Asset{% endif %}</button>
-                            <a href="{% if is_create %}{% url 'asset_list' %}{% else %}{% url 'asset_detail' asset.inventory_number %}{% endif %}" class="btn bttn-outline-edit">
+                            <a href="{% if back_to_asset_detail %}{% url 'asset_detail' asset.inventory_number %}{% else %}{% url 'asset_list' %}{% endif %}" class="btn bttn-outline-edit">
                                 <i class="bi bi-box-arrow-in-left"></i>
                                 Cancel
                             </a>
