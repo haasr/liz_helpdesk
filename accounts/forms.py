@@ -15,7 +15,6 @@ class SettingsForm(forms.ModelForm):
             'asset_visibility',
             'can_modify_assigned_assets',
             'can_modify_all_assets',
-            'notify_ticket_created',
             'notify_status_changed',
             'notify_new_message',
             'notify_ticket_assigned',

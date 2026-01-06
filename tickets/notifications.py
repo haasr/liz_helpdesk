@@ -51,18 +51,17 @@ class NotificationManager:
 
     def notify_ticket_created(self, ticket):
         """Send notification for new ticket creation."""
-        if self._should_send_notification('ticket_created'):
-            context = {
-                'ticket': ticket,
-                'access_code': ticket.access_code,
-            }
-            if django_settings.EMAIL_HOST_PASSWORD: # Check if setup
-                self._send_email(
-                    subject=f'Ticket Created - {ticket.ticket_number}',
-                    template_name='ticket_created',
-                    context=context,
-                    recipient_list=[ticket.requestor_email]
-                )
+        context = {
+            'ticket': ticket,
+            'access_code': ticket.access_code,
+        }
+        if django_settings.EMAIL_HOST_PASSWORD: # Check if setup
+            self._send_email(
+                subject=f'Ticket Created - {ticket.ticket_number}',
+                template_name='ticket_created',
+                context=context,
+                recipient_list=[ticket.requestor_email]
+            )
 
     def notify_status_changed(self, ticket, old_status):
         """Send notification for ticket status changes."""

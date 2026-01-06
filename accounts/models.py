@@ -67,10 +67,6 @@ class Settings(models.Model):
     )
 
     # Notification Preferences
-    notify_ticket_created = models.BooleanField(
-        default=True,
-        help_text="Send notifications for new tickets"
-    )
     notify_status_changed = models.BooleanField(
         default=True,
         help_text="Send notifications when ticket status changes"

@@ -80,14 +80,6 @@ def view_ticket(request, ticket_number, access_code):
             message.sender_email = ticket.requestor_email
             message.is_from_requestor = True
             message.save()
-
-            # Generate new access code
-            ticket.access_code = ticket.generate_access_code()
-            ticket.save()
-            
-            notification_manager.notify_new_message(ticket, message)
-            messages.success(request, 'Message sent successfully!')
-            return redirect('view_ticket', ticket_number=ticket.ticket_number)
     else:
         message_form = TicketMessageForm()
 
